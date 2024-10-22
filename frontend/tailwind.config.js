@@ -12,6 +12,32 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			keyframes: {
+				"fade-left": {
+					"0%": {
+						opacity: "0",
+						transform: "translateX(2rem)"
+					},
+					"100%": {
+						opacity: "1",
+						transform: "translateX(0)"
+					}
+				},
+				"fade-right": {
+					"0%": {
+						opacity: "0",
+						transform: "translateX(-2rem)"
+					},
+					"100%": {
+						opacity: "1",
+						transform: "translateX(0)"
+					}
+				}
+			},
+			animation: {
+				"fade-left": "fade-left 0.2s ease",
+				"fade-right": "fade-right 0.2s ease"
+			},
 			colors: {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',

@@ -6,7 +6,7 @@ import googleIcon from "@/assets/google-icon.svg"
 
 export function Login() {
     return (
-        <div className="bg-brown-300 w-full flex flex-col gap-4">
+        <div className="bg-brown-300 w-full flex flex-col gap-4 animate-fade-left">
             <div>
                 <Label htmlFor="email" className="text-brown-700 text-lg font-semibold">Email</Label>
                 <Input 

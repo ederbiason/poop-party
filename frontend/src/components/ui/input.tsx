@@ -18,7 +18,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className="w-full relative">
         {StartIcon && (
           <div className="absolute left-2.5 top-1/2 transform -translate-y-1/2">
-            <StartIcon size={18} className="text-muted-foreground text-brown-600" />
+            <StartIcon size={18} className="text-muted-foreground" color="#552619" />
           </div>
         )}
         <input
