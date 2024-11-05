@@ -1,15 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { PartiesService } from './parties.service';
 import { CreatePartyDto } from './dto/create-party.dto';
 import { UpdatePartyDto } from './dto/update-party.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('parties')
 export class PartiesController {
   constructor(private readonly partiesService: PartiesService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createPartyDto: CreatePartyDto) {
-    return this.partiesService.create(createPartyDto);
+  async createParty(@Body() createPartyDto: CreatePartyDto, @Request() req) {
+    const createdBy = req.user._id
+
+    return this.partiesService.create(createPartyDto, createdBy)
   }
 
   @Get()

@@ -1,15 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePartyDto } from './dto/create-party.dto';
 import { UpdatePartyDto } from './dto/update-party.dto';
+import { Model, Types } from 'mongoose';
+import { Party } from 'src/schemas/Party.schema';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class PartiesService {
-  create(createPartyDto: CreatePartyDto) {
-    return 'This action adds a new party';
+  constructor(@InjectModel(Party.name) private partyModel: Model<Party>) { }
+
+  async create(createPartyDto: CreatePartyDto, createdBy: string): Promise<Party> {
+    const members = createPartyDto.members || []
+    const isCreatorInMembers = members.some(member => member.userId === createdBy)
+
+    if (!isCreatorInMembers) {
+      members.push({ userId: createdBy, individualShits: 0 })
+    }
+
+    const newParty = new this.partyModel({
+      ...createPartyDto,
+      createdBy: new Types.ObjectId(createdBy),
+      members: members.map(member => ({
+        userId: new Types.ObjectId(member.userId),
+        individualShits: member.individualShits || 0,
+      })),
+    })
+
+    return newParty.save()
   }
 
   findAll() {
-    return `This action returns all parties`;
+    return this.partyModel.find()
   }
 
   findOne(id: number) {
