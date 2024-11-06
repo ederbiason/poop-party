@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePartyDto } from './dto/create-party.dto';
 import { UpdatePartyDto } from './dto/update-party.dto';
 import { Model, Types } from 'mongoose';
 import { Party } from 'src/schemas/Party.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PartiesService {
-  constructor(@InjectModel(Party.name) private partyModel: Model<Party>) { }
+  constructor(
+    @InjectModel(Party.name) private partyModel: Model<Party>,
+    private usersService: UsersService
+  ) { }
 
   async create(createPartyDto: CreatePartyDto, createdBy: string): Promise<Party> {
     const members = createPartyDto.members || []
@@ -27,6 +31,43 @@ export class PartiesService {
     })
 
     return newParty.save()
+  }
+
+  async addMemberToParty(partyId: string, email: string): Promise<Party> {
+    const party = await this.partyModel.findById(partyId)
+    if(!party) throw new NotFoundException("Party não encontrada!") 
+
+    const user = await this.usersService.findByEmail(email)
+    if(!user) throw new NotFoundException("Usuário não encontrado!") 
+
+    const isMember = party.members.some(member => member.userId.equals(user._id))
+    if(isMember) throw new BadRequestException("Usuário já existe na party")
+
+    party.members.push({userId: user._id, individualShits: 0})
+
+    return party.save()
+  }
+
+  async addGoalToParty(partyId: string, targetShits: number): Promise<Party> {
+    const party = await this.partyModel.findById(partyId)
+    if(!party) throw new NotFoundException("Party não encontrada!") 
+
+    party.goals.push({ targetShits, completed: false })
+    
+    return party.save()
+  }
+
+  async updateIndividualShits(partyId: string, userId: string, amount: number): Promise<Party> {
+    const party = await this.partyModel.findById(partyId)
+    if(!party) throw new NotFoundException("Party não encontrada!") 
+    
+    const member = party.members.find(member => member.userId.equals(userId))
+    if (!member) throw new NotFoundException('Membro não encontrado na party')
+
+    member.individualShits += amount
+    if (member.individualShits < 0) member.individualShits = 0
+
+    return party.save()
   }
 
   findAll() {

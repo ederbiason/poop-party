@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { InjectModel } from '@nestjs/mongoose'
 import * as bcrypt from 'bcryptjs'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { User } from 'src/schemas/User.schema'
 
 @Injectable()
@@ -33,15 +33,15 @@ export class UsersService {
     return this.userModel.find()
   }
 
-  async findByEmail(email: string) {
-    const user = await this.userModel.findOne({ email })
-
+  async findByEmail(email: string): Promise<User & { _id: Types.ObjectId } | null> {
+    const user = await this.userModel.findOne({ email }).exec()
+  
     if (!user) {
-      throw new Error("Usuário não encontrado.");
+      throw new Error("Usuário não encontrado.")
     }
-
-    return user
-  }
+  
+    return user as User & { _id: Types.ObjectId }
+  }  
 
   async findOne(id: string) {
     const user = await this.userModel.findById(id).exec()
