@@ -53,7 +53,7 @@ export class PartiesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id/members/:memberId')
+  @Patch(':id/members/:memberId')
   removeMemberFromParty(
     @Param('id') partyId: string,
     @Param('memberId') memberId: string,
@@ -65,7 +65,7 @@ export class PartiesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id/goals/:goalId')
+  @Patch(':id/goals/:goalId')
   removeGoalFromParty(
     @Param('id') partyId: string,
     @Param('goalId') goalId: string,

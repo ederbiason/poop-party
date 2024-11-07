@@ -51,6 +51,9 @@ export class PartiesService {
     const isMember = party.members.some(member => member.userId.equals(user._id))
     if(isMember) throw new BadRequestException("Usuário já existe na party")
 
+    user.parties.push(new Types.ObjectId(partyId))
+    user.save()
+
     party.members.push({userId: user._id, individualShits: 0})
 
     return party.save()
@@ -77,19 +80,28 @@ export class PartiesService {
     member.individualShits += amount
     if (member.individualShits < 0) member.individualShits = 0
 
-    return party.save()
+    party.history.push({
+      userId: new Types.ObjectId(userId),
+      shitTime: new Date()
+    })
+
+    await party.save()
+
+    return party.populate('history.userId', 'name')
   }
 
   async removeMemberFromParty(partyId: string, memberId: string, userId: string): Promise<Party> {
     const party = await this.partyModel.findById(partyId)
     if(!party) throw new NotFoundException("Party não encontrada!") 
 
+    if(memberId === userId) throw new BadRequestException("O criador da party não pode remover a si mesmo.")
+
     this.checkPartyCreator(party, userId)
 
     const memberIndex = party.members.findIndex(member => member.userId.equals(memberId))
     if (memberIndex === -1) throw new NotFoundException('Membro não encontrado na party')
 
-    party.members.slice(memberIndex, 1)
+    party.members.splice(memberIndex, 1)
     return party.save()
   }
 
@@ -119,10 +131,12 @@ export class PartiesService {
     const party = await this.partyModel.findById(partyId)
     if(!party) throw new NotFoundException("Party não encontrada!") 
 
+    if(memberId === String(party.createdBy)) throw new BadRequestException("O criador da party não pode sair, apenas deletar a party.")
+
     const memberIndex = party.members.findIndex(member => member.userId.equals(memberId))
     if (memberIndex === -1) throw new NotFoundException('Usuário não encontrado na party')
 
-    party.members.slice(memberIndex, 1)
+    party.members.splice(memberIndex, 1)
 
     return party.save()
   }
