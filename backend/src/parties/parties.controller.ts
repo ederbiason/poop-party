@@ -16,23 +16,87 @@ export class PartiesController {
     return this.partiesService.create(createPartyDto, createdBy)
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/members')
+  addMemberToParty(
+      @Param('id') partyId: string, 
+      @Body('email') email: string,
+      @Request() req
+    ) {
+    const userId = req.user._id
+
+    return this.partiesService.addMemberToParty(partyId, userId, email)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/goals')
+  addGoalToParty(
+      @Param('id') partyId: string, 
+      @Body('targetShits') targetShits: number,
+      @Request() req
+    ) {
+    const userId = req.user._id
+
+    return this.partiesService.addGoalToParty(partyId, userId, targetShits)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/shits')
+  updateIndividualShits(
+    @Param('id') partyId: string,
+    @Body('amount') amount: number,
+    @Request() req
+  ) {
+    const userId = req.user._id
+
+    return this.partiesService.updateIndividualShits(partyId, userId, amount)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/members/:memberId')
+  removeMemberFromParty(
+    @Param('id') partyId: string,
+    @Param('memberId') memberId: string,
+    @Request() req
+  ) {
+    const userId = req.user._id
+
+    return this.partiesService.removeMemberFromParty(partyId, memberId, userId)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/goals/:goalId')
+  removeGoalFromParty(
+    @Param('id') partyId: string,
+    @Param('goalId') goalId: string,
+    @Request() req
+  ) {
+    const userId = req.user._id
+    
+    return this.partiesService.removeGoalFromParty(partyId, goalId, userId)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async deleteParty(@Param('id') partyId: string, @Request() req) {
+    const userId = req.user._id
+
+    await this.partiesService.deleteParty(partyId, userId)
+    return { message: 'Party deletada com sucesso' }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/leave')
+  async leaveParty(@Param('id') partyId: string, @Request() req) {
+    const userId = req.user._id
+
+    const updatedParty = await this.partiesService.leaveParty(partyId, userId)
+
+    return updatedParty
+  }
+
   @Get()
   findAll() {
     return this.partiesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.partiesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePartyDto: UpdatePartyDto) {
-    return this.partiesService.update(+id, updatePartyDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.partiesService.remove(+id);
   }
 }
