@@ -17,14 +17,5 @@ export class CreateUserDto {
     @Transform(({ value, obj }) => value || obj.email.split('@')[0]) 
     @IsString()
     @Expose()
-    name: string;
-
-    @IsNumber()
-    @IsOptional()
-    @Expose()
-    totalShits: number = 0
-
-    @IsArray()
-    @Type(() => String) 
-    parties: Types.ObjectId[]
+    name: string
 }
