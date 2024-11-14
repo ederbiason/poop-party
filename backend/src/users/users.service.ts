@@ -37,7 +37,7 @@ export class UsersService {
     const user = await this.userModel.findOne({ email }).exec()
   
     if (!user) {
-      throw new Error("Usuário não encontrado.")
+      throw new Error("Usuário não encontrado por email.")
     }
   
     return user as User & { _id: Types.ObjectId }

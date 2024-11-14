@@ -28,11 +28,12 @@ export class CreatePartyDto {
     @IsOptional()
     members?: MemberDto[];
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsDateString()
     endDate?: Date
 
     @IsArray()
+    @IsOptional()
     @ValidateNested({ each: true })
     @Type(() => GoalDto)
     goals: GoalDto[]

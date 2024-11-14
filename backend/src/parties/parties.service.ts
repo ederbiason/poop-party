@@ -60,7 +60,7 @@ export class PartiesService {
     user.parties.push(new Types.ObjectId(partyId))
     user.save()
 
-    party.members.push({ userId: user._id, individualShits: 0 })
+    party.members.push({ userId: new Types.ObjectId(user._id), individualShits: 0 })
 
     return party.save()
   }
