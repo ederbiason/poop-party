@@ -13,7 +13,7 @@ export class CreateUserDto {
     @MinLength(6, { message: 'A senha deve ter no mínimo 6 caracteres' })
     password: string
 
-    // Extract the name from the first part of user email if there is no name seted by the user 
+    // Extract the name from the first part of user email if there is no name seted by the user
     @Transform(({ value, obj }) => value || obj.email.split('@')[0]) 
     @IsString()
     @Expose()

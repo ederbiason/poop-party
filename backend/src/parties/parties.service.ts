@@ -42,7 +42,7 @@ export class PartiesService {
     user.parties.push(newParty._id as Types.ObjectId)
     await user.save()
 
-    return newParty.save()
+    return newParty.save().then(party => party.populate('members.userId', 'name email'))
   }
 
   async addMemberToParty(partyId: string, userId: string, email: string): Promise<Party> {
@@ -62,7 +62,7 @@ export class PartiesService {
 
     party.members.push({ userId: new Types.ObjectId(user._id), individualShits: 0 })
 
-    return party.save()
+    return party.save().then(updatedParty => updatedParty.populate('members.userId', 'name email'))
   }
 
   async addGoalToParty(partyId: string, userId: string, targetShits: number): Promise<Party> {
