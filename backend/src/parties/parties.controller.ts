@@ -6,7 +6,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('parties')
 export class PartiesController {
-  constructor(private readonly partiesService: PartiesService) {}
+  constructor(private readonly partiesService: PartiesService) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -19,10 +19,10 @@ export class PartiesController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id/members')
   addMemberToParty(
-      @Param('id') partyId: string, 
-      @Body('email') email: string,
-      @Request() req
-    ) {
+    @Param('id') partyId: string,
+    @Body('email') email: string,
+    @Request() req
+  ) {
     const userId = req.user._id
 
     return this.partiesService.addMemberToParty(partyId, userId, email)
@@ -31,10 +31,10 @@ export class PartiesController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id/goals')
   addGoalToParty(
-      @Param('id') partyId: string, 
-      @Body('targetShits') targetShits: number,
-      @Request() req
-    ) {
+    @Param('id') partyId: string,
+    @Body('targetShits') targetShits: number,
+    @Request() req
+  ) {
     const userId = req.user._id
 
     return this.partiesService.addGoalToParty(partyId, userId, targetShits)
@@ -72,7 +72,7 @@ export class PartiesController {
     @Request() req
   ) {
     const userId = req.user._id
-    
+
     return this.partiesService.removeGoalFromParty(partyId, goalId, userId)
   }
 
@@ -106,5 +106,11 @@ export class PartiesController {
     const party = await this.partiesService.findPartyById(partyId)
 
     return party
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/user/:userId')
+  async getPartiesByUser(@Param('userId') userId: string) {
+    return await this.partiesService.findPartiesByUser(userId);
   }
 }

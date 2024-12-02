@@ -192,4 +192,17 @@ export class PartiesService {
 
     return party
   }
+
+  async findPartiesByUser(userId: string): Promise<Party[]> {
+    const parties = await this.partyModel
+      .find({ "members.userId": userId })
+      .populate("members.userId", "name email")
+      .populate("createdBy", "name email")
+
+    if (!parties || parties.length === 0) {
+      throw new NotFoundException("Nenhuma party encontrada para este usuário.")
+    }
+
+    return parties
+  }
 }
