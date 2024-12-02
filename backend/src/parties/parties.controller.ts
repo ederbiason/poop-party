@@ -99,4 +99,12 @@ export class PartiesController {
   findAll() {
     return this.partiesService.findAll();
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findPartyById(@Param('id') partyId: string) {
+    const party = await this.partiesService.findPartyById(partyId)
+
+    return party
+  }
 }

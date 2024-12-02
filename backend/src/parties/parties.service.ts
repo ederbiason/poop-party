@@ -36,11 +36,19 @@ export class PartiesService {
       })),
     })
 
-    const user = await this.usersService.findOne(createdBy)
-    if (!user) throw new NotFoundException("Usuário não encontrado!")
+    const creator = await this.usersService.findOne(createdBy);
+    if (!creator) throw new NotFoundException("Usuário criador não encontrado!");
 
-    user.parties.push(newParty._id as Types.ObjectId)
-    await user.save()
+    creator.parties.push(newParty._id as Types.ObjectId);
+    await creator.save();
+
+    for (const member of members) {
+      const user = await this.usersService.findOne(member.userId)
+      if (!user) throw new NotFoundException(`Usuário com ID ${member.userId} não encontrado!`)
+
+      user.parties.push(newParty._id as Types.ObjectId)
+      await user.save()
+    }
 
     return newParty.save().then(party => party.populate('members.userId', 'name email'))
   }
@@ -162,7 +170,7 @@ export class PartiesService {
     party.save()
 
     const user = await this.usersService.findOne(memberId)
-    if(user) {
+    if (user) {
       user.parties = user.parties.filter(party => !party.equals(partyId))
       await user.save()
     }
@@ -172,5 +180,16 @@ export class PartiesService {
 
   findAll() {
     return this.partyModel.find()
+  }
+
+  async findPartyById(partyId: string): Promise<Party> {
+    const party = await this.partyModel
+      .findById(partyId)
+      .populate('history.userId', 'name email')
+      .populate('members.userId', 'name email')
+
+    if (!party) throw new NotFoundException('Party não encontrada!')
+
+    return party
   }
 }
