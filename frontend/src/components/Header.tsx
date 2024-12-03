@@ -1,6 +1,6 @@
 import { Menu } from "lucide-react";
 
-export default function Header() {
+export function Header() {
     return (
         <div className="w-full h-14 bg-brown-600 flex items-center px-5 justify-between">
             <p className="text-3xl">

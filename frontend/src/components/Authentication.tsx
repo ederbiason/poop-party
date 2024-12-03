@@ -4,7 +4,7 @@ import PoopLogo from "@/assets/poop.png"
 import { SignUp } from "@/components/SignUp"
 import { useState } from "react"
 
-export default function Authentication() {
+export function Authentication() {
     const [selectedTab, setSelectedTab] = useState('login')
 
     function handleSignUpSuccess() {
