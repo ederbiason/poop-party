@@ -6,7 +6,7 @@ export function MainLayout() {
         <div className="w-full h-screen bg-brown-300">
             <Header />
 
-            <main>
+            <main className="h-full">
                 <Outlet />
             </main>
         </div>

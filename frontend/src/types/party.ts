@@ -12,11 +12,16 @@ export interface Party {
     }>
     endDate: Date
     history: Array<{
-        userId: string
-        name: string
+        _id: string
+        userId: {
+            _id: string
+            name: string
+            email: string
+        }
         shitTime: Date
     }>
     goals: Array<{
+        _id: string
         targetShits: number
         completed: boolean
     }>
