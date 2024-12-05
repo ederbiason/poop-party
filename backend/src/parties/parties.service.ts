@@ -79,6 +79,11 @@ export class PartiesService {
 
     this.checkPartyCreator(party, userId)
 
+    if (1 > targetShits) throw new BadRequestException("O número alvo de cagadas deve ser maior que 1.")
+
+    const targetAlreadyExist = party.goals.some(goal => goal.targetShits === targetShits)
+    if (targetAlreadyExist) throw new BadRequestException("Essa meta já existe na party.")
+
     party.goals.push({ targetShits, completed: false })
 
     return party.save()
