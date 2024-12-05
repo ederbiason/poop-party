@@ -28,7 +28,11 @@ interface Member extends Partial<User> {
     individualShits: number
 }
 
-export function CreatePartyForm() {
+interface CreatePartyFromProps {
+    fetchParties: () => void
+}
+
+export function CreatePartyForm({ fetchParties }: CreatePartyFromProps) {
     const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
 
     const form = useForm({
@@ -98,6 +102,7 @@ export function CreatePartyForm() {
                 description: "Party criada com sucesso, divirta-se",
             })
 
+            fetchParties()
             form.reset()
             setMembers([])
         } catch (error: any) {
@@ -107,11 +112,9 @@ export function CreatePartyForm() {
 
     return (
         <Dialog>
-            <DialogTrigger>
-                <Button className="bg-brown-800 hover:bg-brown-500 font-semibold text-base">
-                    <SquarePlus />
-                    Criar Party
-                </Button>
+            <DialogTrigger className="w-fit items-center text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold text-base flex p-2 px-3 rounded-md gap-2">
+                <SquarePlus />
+                Criar Party
             </DialogTrigger>
             <DialogContent className="bg-brown-100 rounded-lg">
                 <DialogHeader className="text-start">

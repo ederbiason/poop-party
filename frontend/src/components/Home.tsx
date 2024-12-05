@@ -32,22 +32,21 @@ export function Home() {
         fetchUser()
     }, [])
 
+    async function fetchParties() {
+        try {
+            const response = await axios.get(`${BACKEND_DOMAIN}/parties/user/${user!._id}`, {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            })
+            setParties(response.data)
+        } catch (error: any) {
+            console.error(error.message)
+        }
+    }
+
     useEffect(() => {
         if (user) {
-            async function fetchParties() {
-                try {
-                    const response = await axios.get(`${BACKEND_DOMAIN}/parties/user/${user!._id}`, {
-                        headers: {
-                            Authorization: `Bearer ${TOKEN}`,
-                        },
-                    })
-                    setParties(response.data)
-                    console.log(response.data)
-                } catch (error: any) {
-                    console.error(error.message)
-                }
-            }
-
             fetchParties()
         }
     }, [user])
@@ -59,7 +58,7 @@ export function Home() {
                     Suas parties
                 </h1>
 
-                <CreatePartyForm />
+                <CreatePartyForm fetchParties={fetchParties} />
             </div>
 
             <div className="py-5 mt-3 flex flex-col gap-6">
