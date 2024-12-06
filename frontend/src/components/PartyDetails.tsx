@@ -2,7 +2,7 @@ import { Party } from "@/types/party"
 import axios from "axios"
 import { CircleMinus, CirclePlus, CircleUserRound, Crown, EllipsisVertical, History, LoaderCircle, LogOut, SquarePlus, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import {
     Carousel,
     CarouselContent,
@@ -20,6 +20,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -38,6 +39,8 @@ export function PartyDetails() {
     const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
     const TOKEN = localStorage.getItem('token')
 
+    const navigate = useNavigate()
+
     const { toast } = useToast()
 
     const [party, setParty] = useState<Party>()
@@ -45,6 +48,7 @@ export function PartyDetails() {
     const [targetGoalShit, setTargetGoalShit] = useState<number>(0)
     const [selectedTab, setSelectedTab] = useState<string>("history")
     const [shitCounter, setShitCounter] = useState<number>(1)
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
 
     const { id: partyId } = useParams()
 
@@ -116,6 +120,27 @@ export function PartyDetails() {
         }
     }
 
+    async function handleDeleteGroup() {
+        try {
+            await axios.delete(`${BACKEND_DOMAIN}/parties/${partyId}`, {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            })
+
+            setIsDialogOpen(false)
+            navigate("/")
+            fetchParty()
+            toast({
+                variant: "default",
+                title: "Sucesso",
+                description: "Você apagou o grupo!",
+            })
+        } catch (error: any) {
+            console.error(error.message)
+        }
+    }
+
     const getDayPeriod = (time: Date) => {
         const hour = moment(time).hour()
         if (hour < 12) return "da manhã"
@@ -147,11 +172,48 @@ export function PartyDetails() {
                                             {
                                                 party.createdBy === user!._id ? (
                                                     <DropdownMenuItem>
-                                                        <Trash2 />
-                                                        Deletar grupo
+                                                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                                            <DialogTrigger
+                                                                className="flex items-center gap-1"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    setIsDialogOpen(true)
+                                                                }}
+                                                            >
+                                                                <Trash2 />
+                                                                Deletar grupo
+                                                            </DialogTrigger>
+                                                            <DialogContent className="bg-brown-100 rounded-lg">
+                                                                <DialogHeader className="text-start">
+                                                                    <DialogTitle className="text-brown-700 text-2xl">Você tem certeza que quer deletar o grupo?</DialogTitle>
+                                                                    <DialogDescription className="text-brown-500">
+                                                                        Essa ação não pode ser desfeita. Isso vai permanentemente deletar o grupo.
+                                                                    </DialogDescription>
+                                                                </DialogHeader>
+
+                                                                <DialogFooter className="flex flex-row items-center justify-end gap-5">
+                                                                    <Button 
+                                                                        type="button" 
+                                                                        className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
+                                                                        onClick={() => setIsDialogOpen(false)}
+                                                                    >
+                                                                        Cancelar
+                                                                    </Button>
+                                                                    <Button
+                                                                        type="button"
+                                                                        className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
+                                                                        onClick={() => handleDeleteGroup()}
+                                                                    >
+                                                                        Continuar
+                                                                    </Button>
+                                                                </DialogFooter>
+                                                            </DialogContent>
+                                                        </Dialog>
                                                     </DropdownMenuItem>
                                                 ) : (
-                                                    <DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        
+                                                    >
                                                         <LogOut />
                                                         Sair do grupo
                                                     </DropdownMenuItem>
@@ -161,30 +223,6 @@ export function PartyDetails() {
                                     </DropdownMenu>
                                 </div>
                                 <div className="flex flex-col items-center justify-center gap-5 pt-2">
-                                    <div className="flex items-start justify-between gap-5">
-                                        <div className="flex items-center gap-4 justify-between bg-brown-400 rounded-full px-5 mb-2">
-                                            <CircleMinus
-                                                onClick={() => setShitCounter((prevCount) => Math.max(prevCount - 1, 1))}
-                                            />
-
-                                            <div className="bg-white h-10 w-20 text-center p-2">
-                                                {shitCounter}
-                                            </div>
-
-                                            <CirclePlus
-                                                onClick={() => setShitCounter((prevCount) => prevCount + 1)}
-                                            />
-                                        </div>
-
-                                        <Button
-                                            type="button"
-                                            className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
-                                            onClick={() => handleUpdateIndividualShits(shitCounter)}
-                                        >
-                                            Contabilizar 💩
-                                        </Button>
-                                    </div>
-
                                     <Carousel className="w-full overflow-hidden">
                                         <CarouselContent className="gap-5">
                                             {party.members.sort((a, b) => b.individualShits - a.individualShits).map((member, index) => (
@@ -211,6 +249,30 @@ export function PartyDetails() {
                                         <p className="bg-brown-400 px-4 rounded-full py-1 border border-brown-600">
                                             Total: {totalPartyShits} 💩
                                         </p>
+                                    </div>
+
+                                    <div className="flex items-start justify-between gap-5">
+                                        <div className="flex items-center gap-4 justify-between bg-brown-400 rounded-full px-5 ">
+                                            <CircleMinus
+                                                onClick={() => setShitCounter((prevCount) => Math.max(prevCount - 1, 1))}
+                                            />
+
+                                            <div className="bg-white h-10 w-20 text-center p-2">
+                                                {shitCounter}
+                                            </div>
+
+                                            <CirclePlus
+                                                onClick={() => setShitCounter((prevCount) => prevCount + 1)}
+                                            />
+                                        </div>
+
+                                        <Button
+                                            type="button"
+                                            className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
+                                            onClick={() => handleUpdateIndividualShits(shitCounter)}
+                                        >
+                                            Contabilizar 💩
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
