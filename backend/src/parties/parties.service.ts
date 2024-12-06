@@ -154,7 +154,7 @@ export class PartiesService {
     for (const member of party.members) {
       const user = await this.usersService.findOne(member.userId.toString())
       if (user) {
-        user.parties = user.parties.filter(party => !party.equals(partyId))
+        user.parties = user.parties.filter((userPartyId) => !new Types.ObjectId(userPartyId).equals(partyId))
         await user.save()
       }
     }
