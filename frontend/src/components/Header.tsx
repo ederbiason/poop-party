@@ -1,5 +1,14 @@
-import { Menu } from "lucide-react";
+import { CircleUserRound, LogOut, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { logout } from "@/utils/auth";
 
 export function Header() {
     const navigate = useNavigate()
@@ -14,7 +23,25 @@ export function Header() {
                 Poop Party
             </p>
 
-            <Menu color="#F8F4E1" size={36} />
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <Menu color="#F8F4E1" size={36} />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-brown-400 font-semibold">
+                    <DropdownMenuLabel>Minha conta</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                        <CircleUserRound />
+                        Perfil
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => logout()}
+                    >
+                        <LogOut />
+                        Sair da conta
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     )
 }

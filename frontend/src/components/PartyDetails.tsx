@@ -141,25 +141,26 @@ export function PartyDetails() {
                                         <DropdownMenuTrigger>
                                             <EllipsisVertical className="text-brown-700" />
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="bg-brown-400">
+                                        <DropdownMenuContent className="bg-brown-400 font-semibold">
                                             <DropdownMenuLabel>Grupo</DropdownMenuLabel>
                                             <DropdownMenuSeparator className="" />
-                                            <DropdownMenuItem>
-                                                <LogOut />
-                                                Sair do grupo
-                                            </DropdownMenuItem>
                                             {
-                                                party.createdBy === user!._id && (
+                                                party.createdBy === user!._id ? (
                                                     <DropdownMenuItem>
                                                         <Trash2 />
                                                         Deletar grupo
+                                                    </DropdownMenuItem>
+                                                ) : (
+                                                    <DropdownMenuItem>
+                                                        <LogOut />
+                                                        Sair do grupo
                                                     </DropdownMenuItem>
                                                 )
                                             }
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                                <div className="flex flex-col items-center justify-center gap-5">
+                                <div className="flex flex-col items-center justify-center gap-5 pt-2">
                                     <div className="flex items-start justify-between gap-5">
                                         <div className="flex items-center gap-4 justify-between bg-brown-400 rounded-full px-5 mb-2">
                                             <CircleMinus
@@ -293,7 +294,7 @@ export function PartyDetails() {
 
                                         <div className="bg-brown-400 p-5 rounded-lg flex flex-col gap-5 w-full">
                                             {party.goals.sort((a, b) => a.targetShits - b.targetShits).map((goal) => (
-                                                <div key={goal._id} className="flex gap-3 items-center justify-between">
+                                                <div key={goal._id} className="flex gap-3 items-center justify-between relative">
                                                     <Checkbox
                                                         disabled
                                                         className="w-5 h-5"
@@ -301,6 +302,11 @@ export function PartyDetails() {
                                                     />
 
                                                     <Progress value={((totalPartyShits) / goal.targetShits) * 100} className="h-2" />
+                                                    <span
+                                                        className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-semibold text-zinc-800"
+                                                    >
+                                                        {Math.min(Number(((totalPartyShits / goal.targetShits) * 100).toFixed()), 100)}%
+                                                    </span>
 
                                                     <p className="font-bold">
                                                         {goal.targetShits}
