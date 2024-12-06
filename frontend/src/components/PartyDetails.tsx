@@ -1,6 +1,6 @@
 import { Party } from "@/types/party"
 import axios from "axios"
-import { CircleUserRound, Crown, EllipsisVertical, History, LoaderCircle, LogOut, SquarePlus, Trash2 } from "lucide-react"
+import { CircleMinus, CirclePlus, CircleUserRound, Crown, EllipsisVertical, History, LoaderCircle, LogOut, SquarePlus, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import {
@@ -32,15 +32,19 @@ import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
+import { useToast } from "@/hooks/use-toast"
 
 export function PartyDetails() {
     const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
     const TOKEN = localStorage.getItem('token')
 
+    const { toast } = useToast()
+
     const [party, setParty] = useState<Party>()
     const [user, setUser] = useState<User>()
     const [targetGoalShit, setTargetGoalShit] = useState<number>(0)
     const [selectedTab, setSelectedTab] = useState<string>("history")
+    const [shitCounter, setShitCounter] = useState<number>(1)
 
     const { id: partyId } = useParams()
 
@@ -80,13 +84,33 @@ export function PartyDetails() {
 
     async function handleGoalSubmit(targetShits: number) {
         try {
-            await axios.patch(`${BACKEND_DOMAIN}/parties/${partyId}/goals`, {targetShits}, {
+            await axios.patch(`${BACKEND_DOMAIN}/parties/${partyId}/goals`, { targetShits }, {
                 headers: {
                     Authorization: `Bearer ${TOKEN}`,
                 },
             })
 
             fetchParty()
+        } catch (error: any) {
+            console.error(error.message)
+        }
+    }
+
+    async function handleUpdateIndividualShits(amount: number) {
+        try {
+            await axios.patch(`${BACKEND_DOMAIN}/parties/${partyId}/shits`, { amount }, {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            })
+
+            fetchParty()
+            setShitCounter(0)
+            toast({
+                variant: "default",
+                title: "Bela cagada, colega! 😉",
+                description: "Cagada contabilizada com sucesso",
+            })
         } catch (error: any) {
             console.error(error.message)
         }
@@ -136,6 +160,30 @@ export function PartyDetails() {
                                     </DropdownMenu>
                                 </div>
                                 <div className="flex flex-col items-center justify-center gap-5">
+                                    <div className="flex items-start justify-between gap-5">
+                                        <div className="flex items-center gap-4 justify-between bg-brown-400 rounded-full px-5 mb-2">
+                                            <CircleMinus
+                                                onClick={() => setShitCounter((prevCount) => Math.max(prevCount - 1, 1))}
+                                            />
+
+                                            <div className="bg-white h-10 w-20 text-center p-2">
+                                                {shitCounter}
+                                            </div>
+
+                                            <CirclePlus
+                                                onClick={() => setShitCounter((prevCount) => prevCount + 1)}
+                                            />
+                                        </div>
+
+                                        <Button
+                                            type="button"
+                                            className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
+                                            onClick={() => handleUpdateIndividualShits(shitCounter)}
+                                        >
+                                            Contabilizar 💩
+                                        </Button>
+                                    </div>
+
                                     <Carousel className="w-full overflow-hidden">
                                         <CarouselContent className="gap-5">
                                             {party.members.sort((a, b) => b.individualShits - a.individualShits).map((member, index) => (
@@ -185,7 +233,7 @@ export function PartyDetails() {
                                         </TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="history" className="w-full h-full px-6 pt-6 flex flex-col gap-3">
-                                        {party.history.map((lastPoop) => (
+                                        {party.history.slice(-10).reverse().map((lastPoop) => (
                                             <div key={lastPoop._id} className="bg-brown-400 rounded-lg p-3 flex items-center gap-3 relative text-brown-300">
                                                 <CircleUserRound size={60} />
 
@@ -195,7 +243,7 @@ export function PartyDetails() {
                                                     </p>
 
                                                     <p className="font-semibold text-lg">
-                                                        {`${moment(lastPoop.shitTime).format("HH:mm")} ${getDayPeriod(lastPoop.shitTime)}`}
+                                                        {`${moment(lastPoop.shitTime).format("DD/MM - HH:mm")} ${getDayPeriod(lastPoop.shitTime)}`}
                                                     </p>
                                                 </div>
 
@@ -204,7 +252,7 @@ export function PartyDetails() {
                                         ))}
                                     </TabsContent>
 
-                                    <TabsContent value="goals" className="w-full h-full px-6 flex flex-col gap-5 items-end">
+                                    <TabsContent value="goals" className="w-full h-full px-6 flex flex-col gap-5 items-end mb-6">
                                         {
                                             party.createdBy === user!._id && (
                                                 <Dialog>
@@ -231,9 +279,9 @@ export function PartyDetails() {
                                                             />
                                                         </div>
 
-                                                        <Button 
-                                                            type="submit" 
-                                                            onClick={() => handleGoalSubmit(targetGoalShit)} 
+                                                        <Button
+                                                            type="submit"
+                                                            onClick={() => handleGoalSubmit(targetGoalShit)}
                                                             className="bg-brown-800 hover:bg-brown-500 mt-2"
                                                         >
                                                             Criar Meta
@@ -249,7 +297,7 @@ export function PartyDetails() {
                                                     <Checkbox
                                                         disabled
                                                         className="w-5 h-5"
-                                                        checked={goal.targetShits <= totalPartyShits} 
+                                                        checked={goal.targetShits <= totalPartyShits}
                                                     />
 
                                                     <Progress value={((totalPartyShits) / goal.targetShits) * 100} className="h-2" />
