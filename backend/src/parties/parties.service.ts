@@ -168,7 +168,7 @@ export class PartiesService {
 
     if (memberId === String(party.createdBy)) throw new BadRequestException("O criador da party não pode sair, apenas deletar a party.")
 
-    const memberIndex = party.members.findIndex(member => member.userId.equals(memberId))
+    const memberIndex = party.members.findIndex(member => new Types.ObjectId(member.userId).equals(new Types.ObjectId(memberId)))
     if (memberIndex === -1) throw new NotFoundException('Usuário não encontrado na party')
 
     party.members.splice(memberIndex, 1)
@@ -176,7 +176,7 @@ export class PartiesService {
 
     const user = await this.usersService.findOne(memberId)
     if (user) {
-      user.parties = user.parties.filter(party => !party.equals(partyId))
+      user.parties = user.parties.filter((userPartyId) => !new Types.ObjectId(userPartyId).equals(partyId))
       await user.save()
     }
 
