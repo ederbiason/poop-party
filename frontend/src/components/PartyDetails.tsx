@@ -48,7 +48,8 @@ export function PartyDetails() {
     const [targetGoalShit, setTargetGoalShit] = useState<number>(0)
     const [selectedTab, setSelectedTab] = useState<string>("history")
     const [shitCounter, setShitCounter] = useState<number>(1)
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const [isLeaveGroupDialogOpen, setIsLeaveGroupDialogOpen] = useState(false)
 
     const { id: partyId } = useParams()
 
@@ -128,7 +129,7 @@ export function PartyDetails() {
                 },
             })
 
-            setIsDialogOpen(false)
+            setIsDeleteDialogOpen(false)
             navigate("/")
             fetchParty()
             toast({
@@ -138,6 +139,27 @@ export function PartyDetails() {
             })
         } catch (error: any) {
             console.error(error.message)
+        }
+    }
+
+    async function handleLeaveGroup() {
+        try {
+            await axios.patch(`${BACKEND_DOMAIN}/parties/${partyId}/leave`, {}, {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            })
+
+            setIsLeaveGroupDialogOpen(false)
+            navigate("/")
+            fetchParty()
+            toast({
+                variant: "default",
+                title: "Sucesso",
+                description: "Você saiu do grupo!",
+            })
+        } catch (error: any) {
+            console.error(error)
         }
     }
 
@@ -172,12 +194,12 @@ export function PartyDetails() {
                                             {
                                                 party.createdBy === user!._id ? (
                                                     <DropdownMenuItem>
-                                                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                                        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                                                             <DialogTrigger
                                                                 className="flex items-center gap-1"
                                                                 onClick={(e) => {
                                                                     e.stopPropagation()
-                                                                    setIsDialogOpen(true)
+                                                                    setIsDeleteDialogOpen(true)
                                                                 }}
                                                             >
                                                                 <Trash2 />
@@ -185,7 +207,7 @@ export function PartyDetails() {
                                                             </DialogTrigger>
                                                             <DialogContent className="bg-brown-100 rounded-lg">
                                                                 <DialogHeader className="text-start">
-                                                                    <DialogTitle className="text-brown-700 text-2xl">Você tem certeza que quer deletar o grupo?</DialogTitle>
+                                                                    <DialogTitle className="text-brown-700 text-2xl">Tem certeza que deseja deletar o grupo?</DialogTitle>
                                                                     <DialogDescription className="text-brown-500">
                                                                         Essa ação não pode ser desfeita. Isso vai permanentemente deletar o grupo.
                                                                     </DialogDescription>
@@ -195,7 +217,7 @@ export function PartyDetails() {
                                                                     <Button 
                                                                         type="button" 
                                                                         className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
-                                                                        onClick={() => setIsDialogOpen(false)}
+                                                                        onClick={() => setIsDeleteDialogOpen(false)}
                                                                     >
                                                                         Cancelar
                                                                     </Button>
@@ -211,11 +233,44 @@ export function PartyDetails() {
                                                         </Dialog>
                                                     </DropdownMenuItem>
                                                 ) : (
-                                                    <DropdownMenuItem
-                                                        
-                                                    >
-                                                        <LogOut />
-                                                        Sair do grupo
+                                                    <DropdownMenuItem>
+                                                        <Dialog open={isLeaveGroupDialogOpen} onOpenChange={setIsLeaveGroupDialogOpen}>
+                                                            <DialogTrigger
+                                                                className="flex items-center gap-1"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    setIsLeaveGroupDialogOpen(true)
+                                                                }}
+                                                            >
+                                                                <LogOut />
+                                                                Sair do grupo
+                                                            </DialogTrigger>
+                                                            <DialogContent className="bg-brown-100 rounded-lg">
+                                                                <DialogHeader className="text-start">
+                                                                    <DialogTitle className="text-brown-700 text-2xl">Tem certeza que deseja sair do grupo?</DialogTitle>
+                                                                    <DialogDescription className="text-brown-500">
+                                                                        Essa ação não pode ser desfeita. Você será removido do grupo.
+                                                                    </DialogDescription>
+                                                                </DialogHeader>
+
+                                                                <DialogFooter className="flex flex-row items-center justify-end gap-5">
+                                                                    <Button 
+                                                                        type="button" 
+                                                                        className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
+                                                                        onClick={() => setIsLeaveGroupDialogOpen(false)}
+                                                                    >
+                                                                        Cancelar
+                                                                    </Button>
+                                                                    <Button
+                                                                        type="button"
+                                                                        className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
+                                                                        onClick={() => handleLeaveGroup()}
+                                                                    >
+                                                                        Continuar
+                                                                    </Button>
+                                                                </DialogFooter>
+                                                            </DialogContent>
+                                                        </Dialog>
                                                     </DropdownMenuItem>
                                                 )
                                             }
