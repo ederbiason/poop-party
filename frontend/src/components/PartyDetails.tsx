@@ -112,7 +112,7 @@ export function PartyDetails() {
             })
 
             fetchParty()
-            setShitCounter(0)
+            setShitCounter(1)
             toast({
                 variant: "default",
                 title: "Bela cagada, colega! 😉",

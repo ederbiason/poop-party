@@ -6,6 +6,10 @@ import { User } from "@/types/user"
 import { Party } from "@/types/party"
 import { useNavigate } from "react-router-dom"
 
+import moment from "moment"
+import 'moment/dist/locale/pt-br'
+moment.locale('pt-br')
+
 export function Home() {
     const [user, setUser] = useState<User>()
     const [parties, setParties] = useState<Party[]>([])
@@ -74,22 +78,36 @@ export function Home() {
                                 </p>
 
                                 <div className="bg-brown-200 px-3 flex flex-col divide-y divide-brown-500">
-                                    {party.members.sort((a, b) => b.individualShits - a.individualShits).map((member, index) => (
-                                        <div key={member.userId._id} className="flex items-center justify-between py-2">
-                                            <div className="flex justify-between items-center gap-2">
-                                                <CircleUserRound size={55} />
+                                    {party.members.sort((a, b) => b.individualShits - a.individualShits).map((member, index) => {
+                                        const lastPoopLog = party.history
+                                            .filter((log: any) => log.userId === member.userId._id)
+                                            .sort((a, b) => new Date(b.shitTime).getTime() - new Date(a.shitTime).getTime())[0]
+
+                                        const timePassed = lastPoopLog
+                                            ? moment(lastPoopLog.shitTime).fromNow()
+                                            : "Sem registro"
+
+                                        console.log(timePassed)
+
+                                        return (
+                                            <div key={member.userId._id} className="flex items-center justify-between py-2">
+                                                <div className="flex justify-between items-center gap-2">
+                                                    <CircleUserRound size={55} />
+                                                    <div className="font-semibold">
+                                                        <p className="capitalize">{member.userId.name}</p>
+                                                        <p>💩: {member.individualShits}</p>
+                                                    </div>
+                                                </div>
+
                                                 <div className="font-semibold">
-                                                    <p className="capitalize">{member.userId.name}</p>
-                                                    <p>💩: {member.individualShits}</p>
+                                                    <p className="text-end">{index + 1}°</p>
+                                                    <p>
+                                                        {timePassed}
+                                                    </p>
                                                 </div>
                                             </div>
-
-                                            <div className="font-semibold">
-                                                <p className="text-end">{index + 1}°</p>
-                                                <p>2 hrs atrás</p>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        )
+                                    })}
                                 </div>
 
                                 <p className="text-center p-3 text-white text-2xl font-bold">
@@ -100,7 +118,7 @@ export function Home() {
                     </div>
                 ) : (
                     <div className="py-5 mt-3 flex gap-2 font-semibold items-center justify-center text-brown-700">
-                        <p>Você não faz parte de nenhuma party!</p> 
+                        <p>Você não faz parte de nenhuma party!</p>
                         <Frown />
                     </div>
                 )
