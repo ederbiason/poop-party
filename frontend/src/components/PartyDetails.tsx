@@ -216,8 +216,8 @@ export function PartyDetails() {
                                                                 </DialogHeader>
 
                                                                 <DialogFooter className="flex flex-row items-center justify-end gap-5">
-                                                                    <Button 
-                                                                        type="button" 
+                                                                    <Button
+                                                                        type="button"
                                                                         className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
                                                                         onClick={() => setIsDeleteDialogOpen(false)}
                                                                     >
@@ -256,8 +256,8 @@ export function PartyDetails() {
                                                                 </DialogHeader>
 
                                                                 <DialogFooter className="flex flex-row items-center justify-end gap-5">
-                                                                    <Button 
-                                                                        type="button" 
+                                                                    <Button
+                                                                        type="button"
                                                                         className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
                                                                         onClick={() => setIsLeaveGroupDialogOpen(false)}
                                                                     >
@@ -353,30 +353,38 @@ export function PartyDetails() {
                                         </TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="history" className="w-full h-full px-6 pt-6 flex flex-col gap-3">
-                                        {party.history.slice(-10).reverse().map((lastPoop) => (
-                                            <div key={lastPoop._id} className="bg-brown-400 rounded-lg p-3 flex items-center gap-3 relative text-brown-300">
-                                                <CircleUserRound size={60} />
-
-                                                <div className="">
-                                                    <p className="capitalize font-semibold text-lg">
-                                                        {lastPoop.userId.name}
-                                                    </p>
-
-                                                    <p className="font-semibold text-lg">
-                                                        {`${moment(lastPoop.shitTime).format("DD/MM - HH:mm")} ${getDayPeriod(lastPoop.shitTime)}`}
-                                                    </p>
+                                        {
+                                            party.history.length === 0 ? (
+                                                <div className="text-center text-brown-300 font-semibold">
+                                                    <p>Não há registros de cagadas ainda.</p>
                                                 </div>
+                                            ) : (
+                                                party.history.slice(-10).reverse().map((lastPoop) => (
+                                                    <div key={lastPoop._id} className="bg-brown-400 rounded-lg p-3 flex items-center gap-3 relative text-brown-300">
+                                                        <CircleUserRound size={60} />
 
-                                                <History className="absolute top-1 right-1" />
-                                            </div>
-                                        ))}
+                                                        <div className="">
+                                                            <p className="capitalize font-semibold text-lg">
+                                                                {lastPoop.userId.name}
+                                                            </p>
+
+                                                            <p className="font-semibold text-lg">
+                                                                {`${moment(lastPoop.shitTime).format("DD/MM - HH:mm")} ${getDayPeriod(lastPoop.shitTime)}`}
+                                                            </p>
+                                                        </div>
+
+                                                        <History className="absolute top-1 right-1" />
+                                                    </div>
+                                                ))
+                                            )
+                                        }
                                     </TabsContent>
 
                                     <TabsContent value="goals" className="w-full h-full px-6 flex flex-col gap-5 items-end mb-6">
                                         {
                                             party.createdBy === user!._id && (
                                                 <Dialog open={isCreateGoalDialogOpen} onOpenChange={setIsCreateGoalDialogOpen}>
-                                                    <DialogTrigger 
+                                                    <DialogTrigger
                                                         className="w-fit items-center text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold text-base flex p-2 px-3 rounded-md gap-2"
                                                         onClick={() => setIsCreateGoalDialogOpen(true)}
                                                     >
@@ -415,26 +423,34 @@ export function PartyDetails() {
                                         }
 
                                         <div className="bg-brown-400 p-5 rounded-lg flex flex-col gap-5 w-full">
-                                            {party.goals.sort((a, b) => a.targetShits - b.targetShits).map((goal) => (
-                                                <div key={goal._id} className="flex gap-3 items-center justify-between relative">
-                                                    <Checkbox
-                                                        disabled
-                                                        className="w-5 h-5"
-                                                        checked={goal.targetShits <= totalPartyShits}
-                                                    />
+                                            {
+                                                party.goals.length === 0 ? (
+                                                    <div className="text-center text-brown-300 font-semibold">
+                                                        <p>Não há metas de cagadas ainda.</p>
+                                                    </div>
+                                                ) : (
+                                                    party.goals.sort((a, b) => a.targetShits - b.targetShits).map((goal) => (
+                                                        <div key={goal._id} className="flex gap-3 items-center justify-between relative">
+                                                            <Checkbox
+                                                                disabled
+                                                                className="w-5 h-5"
+                                                                checked={goal.targetShits <= totalPartyShits}
+                                                            />
 
-                                                    <Progress value={((totalPartyShits) / goal.targetShits) * 100} className="h-2" />
-                                                    <span
-                                                        className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-semibold text-zinc-800"
-                                                    >
-                                                        {Math.min(Number(((totalPartyShits / goal.targetShits) * 100).toFixed()), 100)}%
-                                                    </span>
+                                                            <Progress value={((totalPartyShits) / goal.targetShits) * 100} className="h-2" />
+                                                            <span
+                                                                className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-semibold text-zinc-800"
+                                                            >
+                                                                {Math.min(Number(((totalPartyShits / goal.targetShits) * 100).toFixed()), 100)}%
+                                                            </span>
 
-                                                    <p className="font-bold">
-                                                        {goal.targetShits}
-                                                    </p>
-                                                </div>
-                                            ))}
+                                                            <p className="font-bold">
+                                                                {goal.targetShits}
+                                                            </p>
+                                                        </div>
+                                                    ))
+                                                )
+                                            }
                                         </div>
                                     </TabsContent>
                                 </Tabs>
