@@ -34,6 +34,7 @@ interface CreatePartyFromProps {
 
 export function CreatePartyForm({ fetchParties }: CreatePartyFromProps) {
     const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
+    const [isCreatePartyDialogOpen, setIsCreatePartyDialogOpen] = useState(false)
 
     const form = useForm({
         resolver: zodResolver(CreatePartySchema),
@@ -102,6 +103,7 @@ export function CreatePartyForm({ fetchParties }: CreatePartyFromProps) {
                 description: "Party criada com sucesso, divirta-se",
             })
 
+            setIsCreatePartyDialogOpen(false)
             fetchParties()
             form.reset()
             setMembers([])
@@ -111,8 +113,11 @@ export function CreatePartyForm({ fetchParties }: CreatePartyFromProps) {
     }
 
     return (
-        <Dialog>
-            <DialogTrigger className="w-fit items-center text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold text-base flex p-2 px-3 rounded-md gap-2">
+        <Dialog open={isCreatePartyDialogOpen} onOpenChange={setIsCreatePartyDialogOpen}>
+            <DialogTrigger 
+                className="w-fit items-center text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold text-base flex p-2 px-3 rounded-md gap-2"
+                onClick={() => setIsCreatePartyDialogOpen(true)}    
+            >
                 <SquarePlus />
                 Criar Party
             </DialogTrigger>

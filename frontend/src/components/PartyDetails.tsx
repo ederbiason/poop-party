@@ -50,6 +50,7 @@ export function PartyDetails() {
     const [shitCounter, setShitCounter] = useState<number>(1)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [isLeaveGroupDialogOpen, setIsLeaveGroupDialogOpen] = useState(false)
+    const [isCreateGoalDialogOpen, setIsCreateGoalDialogOpen] = useState(false)
 
     const { id: partyId } = useParams()
 
@@ -96,6 +97,7 @@ export function PartyDetails() {
             })
 
             fetchParty()
+            setIsCreateGoalDialogOpen(false)
         } catch (error: any) {
             console.error(error.message)
         }
@@ -373,8 +375,11 @@ export function PartyDetails() {
                                     <TabsContent value="goals" className="w-full h-full px-6 flex flex-col gap-5 items-end mb-6">
                                         {
                                             party.createdBy === user!._id && (
-                                                <Dialog>
-                                                    <DialogTrigger className="w-fit items-center text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold text-base flex p-2 px-3 rounded-md gap-2">
+                                                <Dialog open={isCreateGoalDialogOpen} onOpenChange={setIsCreateGoalDialogOpen}>
+                                                    <DialogTrigger 
+                                                        className="w-fit items-center text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold text-base flex p-2 px-3 rounded-md gap-2"
+                                                        onClick={() => setIsCreateGoalDialogOpen(true)}
+                                                    >
                                                         <SquarePlus />
                                                         Criar meta
                                                     </DialogTrigger>
