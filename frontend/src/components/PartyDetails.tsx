@@ -1,6 +1,6 @@
 import { Party } from "@/types/party"
 import axios from "axios"
-import { CircleMinus, CirclePlus, CircleUserRound, Crown, EllipsisVertical, History, LoaderCircle, LogOut, SquarePlus, Trash2 } from "lucide-react"
+import { CircleMinus, CirclePlus, CircleUserRound, Crown, EllipsisVertical, History, LoaderCircle, LogOut, SquarePlus, Trash2, Users } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
@@ -195,45 +195,52 @@ export function PartyDetails() {
                                             <DropdownMenuSeparator className="" />
                                             {
                                                 party.createdBy === user!._id ? (
-                                                    <DropdownMenuItem>
-                                                        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                                                            <DialogTrigger
-                                                                className="flex items-center gap-1"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation()
-                                                                    setIsDeleteDialogOpen(true)
-                                                                }}
-                                                            >
-                                                                <Trash2 />
-                                                                Deletar grupo
-                                                            </DialogTrigger>
-                                                            <DialogContent className="bg-brown-100 rounded-lg">
-                                                                <DialogHeader className="text-start">
-                                                                    <DialogTitle className="text-brown-700 text-2xl">Tem certeza que deseja deletar o grupo?</DialogTitle>
-                                                                    <DialogDescription className="text-brown-500">
-                                                                        Essa ação não pode ser desfeita. Isso vai permanentemente deletar o grupo.
-                                                                    </DialogDescription>
-                                                                </DialogHeader>
+                                                    <>
+                                                        <DropdownMenuItem>
+                                                            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                                                                <DialogTrigger
+                                                                    className="flex items-center gap-2"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation()
+                                                                        setIsDeleteDialogOpen(true)
+                                                                    }}
+                                                                >
+                                                                    <Trash2 />
+                                                                    Deletar grupo
+                                                                </DialogTrigger>
+                                                                <DialogContent className="bg-brown-100 rounded-lg">
+                                                                    <DialogHeader className="text-start">
+                                                                        <DialogTitle className="text-brown-700 text-2xl">Tem certeza que deseja deletar o grupo?</DialogTitle>
+                                                                        <DialogDescription className="text-brown-500">
+                                                                            Essa ação não pode ser desfeita. Isso vai permanentemente deletar o grupo.
+                                                                        </DialogDescription>
+                                                                    </DialogHeader>
 
-                                                                <DialogFooter className="flex flex-row items-center justify-end gap-5">
-                                                                    <Button
-                                                                        type="button"
-                                                                        className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
-                                                                        onClick={() => setIsDeleteDialogOpen(false)}
-                                                                    >
-                                                                        Cancelar
-                                                                    </Button>
-                                                                    <Button
-                                                                        type="button"
-                                                                        className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
-                                                                        onClick={() => handleDeleteGroup()}
-                                                                    >
-                                                                        Continuar
-                                                                    </Button>
-                                                                </DialogFooter>
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                    </DropdownMenuItem>
+                                                                    <DialogFooter className="flex flex-row items-center justify-end gap-5">
+                                                                        <Button
+                                                                            type="button"
+                                                                            className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
+                                                                            onClick={() => setIsDeleteDialogOpen(false)}
+                                                                        >
+                                                                            Cancelar
+                                                                        </Button>
+                                                                        <Button
+                                                                            type="button"
+                                                                            className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
+                                                                            onClick={() => handleDeleteGroup()}
+                                                                        >
+                                                                            Continuar
+                                                                        </Button>
+                                                                    </DialogFooter>
+                                                                </DialogContent>
+                                                            </Dialog>
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuItem onClick={() => navigate(`members`, { state: party })}>
+                                                            <Users />
+                                                            Membros
+                                                        </DropdownMenuItem>
+                                                    </>
                                                 ) : (
                                                     <DropdownMenuItem>
                                                         <Dialog open={isLeaveGroupDialogOpen} onOpenChange={setIsLeaveGroupDialogOpen}>

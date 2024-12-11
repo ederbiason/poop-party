@@ -87,8 +87,6 @@ export function Home() {
                                             ? moment(lastPoopLog.shitTime).fromNow()
                                             : "Sem registro"
 
-                                        console.log(timePassed)
-
                                         return (
                                             <div key={member.userId._id} className="flex items-center justify-between py-2">
                                                 <div className="flex justify-between items-center gap-2">
@@ -123,7 +121,6 @@ export function Home() {
                     </div>
                 )
             }
-
         </div>
     )
 }
