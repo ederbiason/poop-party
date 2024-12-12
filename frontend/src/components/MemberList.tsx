@@ -14,7 +14,7 @@ export function MemberList() {
                     Membros
                 </h1>
 
-                <AddMemberForm />
+                <AddMemberForm members={partyInfo.members} partyId={partyInfo._id} />
             </div>
 
             <div className="w-full h-full flex flex-col gap-3 my-6">
