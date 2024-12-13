@@ -17,19 +17,20 @@ import { Input } from "@/components/ui/input"
 
 interface Member {
     userId: {
-        _id: string;
-        name: string;
-        email: string;
-    };
-    individualShits: number;
+        _id: string
+        name: string
+        email: string
+    }
+    individualShits: number
 }
 
 interface AddMemberFormProps {
     members: Member[]
     partyId: string
+    fetchParty: () => Promise<void>
 }
 
-export function AddMemberForm({ members, partyId }: AddMemberFormProps) {
+export function AddMemberForm({ members, partyId, fetchParty }: AddMemberFormProps) {
     const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
     const TOKEN = localStorage.getItem('token')
 
@@ -74,6 +75,7 @@ export function AddMemberForm({ members, partyId }: AddMemberFormProps) {
                     },
                 })
 
+                fetchParty()
                 setNewMemberEmail("")
                 setIsAddMemberDialogOpen(false)
 
