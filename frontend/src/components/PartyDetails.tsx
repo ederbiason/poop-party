@@ -1,8 +1,8 @@
 import { Party } from "@/types/party"
 import axios from "axios"
 import { CircleMinus, CirclePlus, CircleUserRound, Crown, EllipsisVertical, History, LoaderCircle, LogOut, SquarePlus, Trash2, Users } from "lucide-react"
-import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useState } from "react"
+import { useNavigate, useOutletContext, useParams } from "react-router-dom"
 import {
     Carousel,
     CarouselContent,
@@ -35,6 +35,12 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { useToast } from "@/hooks/use-toast"
 
+export interface PartyContext {
+    party: Party
+    fetchParty: () => Promise<void>
+    user: User
+}
+
 export function PartyDetails() {
     const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
     const TOKEN = localStorage.getItem('token')
@@ -43,8 +49,6 @@ export function PartyDetails() {
 
     const { toast } = useToast()
 
-    const [party, setParty] = useState<Party>()
-    const [user, setUser] = useState<User>()
     const [targetGoalShit, setTargetGoalShit] = useState<number>(0)
     const [selectedTab, setSelectedTab] = useState<string>("history")
     const [shitCounter, setShitCounter] = useState<number>(1)
@@ -53,40 +57,7 @@ export function PartyDetails() {
     const [isCreateGoalDialogOpen, setIsCreateGoalDialogOpen] = useState(false)
 
     const { id: partyId } = useParams()
-
-    async function fetchParty() {
-        try {
-            const response = await axios.get(`${BACKEND_DOMAIN}/parties/${partyId}`, {
-                headers: {
-                    Authorization: `Bearer ${TOKEN}`,
-                },
-            })
-            setParty(response.data)
-        } catch (error: any) {
-            console.error(error.message)
-        }
-    }
-
-    useEffect(() => {
-        fetchParty()
-    }, [])
-
-    useEffect(() => {
-        async function fetchUser() {
-            try {
-                const response = await axios.get(`${BACKEND_DOMAIN}/auth/profile`, {
-                    headers: {
-                        Authorization: `Bearer ${TOKEN}`,
-                    },
-                })
-                setUser(response.data)
-            } catch (error: any) {
-                console.error(error.message)
-            }
-        }
-
-        fetchUser()
-    }, [])
+    const { party, fetchParty, user } = useOutletContext<PartyContext>()
 
     async function handleGoalSubmit(targetShits: number) {
         try {
@@ -236,7 +207,7 @@ export function PartyDetails() {
                                                             </Dialog>
                                                         </DropdownMenuItem>
 
-                                                        <DropdownMenuItem onClick={() => navigate(`members`, { state: party })}>
+                                                        <DropdownMenuItem onClick={() => navigate('members')}>
                                                             <Users />
                                                             Membros
                                                         </DropdownMenuItem>

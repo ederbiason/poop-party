@@ -1,11 +1,10 @@
-import { Party } from "@/types/party"
 import { CircleUserRound, Crown, ShieldCheck, SquarePen, SquareX } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { AddMemberForm } from "./AddMemberForm";
+import { PartyContext } from "./PartyDetails";
 
 export function MemberList() {
-    const location = useLocation();
-    const partyInfo: Party = location.state
+    const { party: partyInfo, fetchParty } = useOutletContext<PartyContext>()
 
     return (
         <div className="w-full h-full p-6 bg-brown-300">
