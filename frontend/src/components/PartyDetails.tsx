@@ -150,7 +150,7 @@ export function PartyDetails() {
                     const totalPartyShits = party.members.reduce((total, member) => total + member.individualShits, 0)
 
                     return (
-                        <div className="flex flex-col h-full">
+                        <div className="flex flex-col">
                             <div className="p-6">
                                 <div className="flex items-center justify-between mb-5">
                                     <h1 className="underline text-brown-700 text-3xl font-bold underline-offset-8">
@@ -313,7 +313,7 @@ export function PartyDetails() {
                             </div>
 
                             <div className="bg-brown-500 w-full h-full rounded-t-2xl pt-6">
-                                <Tabs value={selectedTab} className="w-full">
+                                <Tabs value={selectedTab} className="w-full h-full">
                                     <TabsList className="w-full flex justify-around text-brown-300">
                                         <TabsTrigger
                                             value="history"

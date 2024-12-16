@@ -49,7 +49,7 @@ export function PartyWrapper() {
     }, [])
 
     return (
-        <div className="w-full h-full">
+        <div className="w-full min-h-screen">
             <Outlet context={{party, fetchParty, user}} />
         </div>
     )
