@@ -53,6 +53,19 @@ export class PartiesController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Patch(':id/member/edit')
+  editMember(
+    @Param('id') partyId: string,
+    @Body('amount') amount: number,
+    @Body('memberId') memberId: string,
+    @Request() req
+  ) {
+    const userId = req.user._id
+
+    return this.partiesService.editMember(partyId, userId, memberId, amount)
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id/members/:memberId')
   removeMemberFromParty(
     @Param('id') partyId: string,

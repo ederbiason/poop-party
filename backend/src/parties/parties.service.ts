@@ -109,6 +109,23 @@ export class PartiesService {
     return party.populate('history.userId', 'name')
   }
 
+  async editMember(partyId: string, userId: string, memberId: string, amount: number): Promise<Party> {
+    const party = await this.partyModel.findById(partyId)
+    if (!party) throw new NotFoundException("Party não encontrada!")
+
+    this.checkPartyCreator(party, userId)
+
+    const member = party.members.find(member => member.userId.equals(memberId))
+    if (!member) throw new NotFoundException('Membro não encontrado na party')
+
+    member.individualShits = amount
+    if (member.individualShits < 0) member.individualShits = 0
+
+    await party.save()
+
+    return party
+  }
+
   async removeMemberFromParty(partyId: string, memberId: string, userId: string): Promise<Party> {
     const party = await this.partyModel.findById(partyId)
     if (!party) throw new NotFoundException("Party não encontrada!")
