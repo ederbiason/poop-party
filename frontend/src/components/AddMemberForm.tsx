@@ -54,6 +54,7 @@ export function AddMemberForm({ members, partyId, fetchParty }: AddMemberFormPro
                     description: "Tente adicionar outro membro",
                 })
                 console.warn("Este usuário já está na lista de membros.")
+                setNewMemberEmail("")
                 return true
             }
 

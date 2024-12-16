@@ -1,54 +1,16 @@
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogFooter
-} from "@/components/ui/dialog"
-import { CircleUserRound, Crown, Loader, ShieldCheck, SquarePen, SquareX } from "lucide-react";
-import { useOutletContext } from "react-router-dom";
-import { AddMemberForm } from "@/components/AddMemberForm";
-import { PartyContext } from "@/components/PartyDetails";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { useToast } from "@/hooks/use-toast";
+import { CircleUserRound, Crown, Loader, ShieldCheck, SquarePen } from "lucide-react"
+import { useOutletContext } from "react-router-dom"
+import { AddMemberForm } from "@/components/AddMemberForm"
+import { PartyContext } from "@/components/PartyDetails"
+import { RemoveMemberButton } from "./RemoveMemberButton"
 
 export function MemberList() {
-    const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
-    const TOKEN = localStorage.getItem('token')
-
-    const { toast } = useToast()
-
     const { party, fetchParty } = useOutletContext<PartyContext>()
-    const [isRemoveMemberDialogOpen, setIsRemoveMemberDialogOpen] = useState(false)
-
-    async function handleRemoveMember(memberId: string) {
-        try {
-            await axios.patch(`${BACKEND_DOMAIN}/parties/${party._id}/members/${memberId}`, {
-                headers: {
-                    Authorization: `Bearer ${TOKEN}`,
-                }
-            })
-            
-            setIsRemoveMemberDialogOpen(false)
-            fetchParty()
-            toast({
-                variant: "default",
-                title: "Sucesso",
-                description: "Você apagou o grupo!",
-            })
-        } catch (error: any) {
-            console.error(error.message)
-        }
-    }
 
     if (!party) {
         return (
             <div className="w-full h-full flex mt-10 justify-center gap-2 bg-brown-300">
-                <Loader className="animate-spin" /> 
+                <Loader className="animate-spin" />
                 Carregando membros da party
             </div>
         )
@@ -90,39 +52,7 @@ export function MemberList() {
                                 {isMemberAdmin ? (
                                     <ShieldCheck color="black" fill="yellow" />
                                 ) : (
-                                    <Dialog open={isRemoveMemberDialogOpen} onOpenChange={setIsRemoveMemberDialogOpen}>
-                                        <DialogTrigger
-                                            className="flex items-center gap-2"
-                                            onClick={() => setIsRemoveMemberDialogOpen(true)}
-                                        >
-                                            <SquareX className="text-red-700" />
-                                        </DialogTrigger>
-                                        <DialogContent className="bg-brown-100 rounded-lg">
-                                            <DialogHeader className="text-start">
-                                                <DialogTitle className="text-brown-700 text-2xl">Tem certeza que deseja remover esse membro?</DialogTitle>
-                                                <DialogDescription className="text-brown-500">
-                                                    Essa ação vai remover completamente o membro do grupo.
-                                                </DialogDescription>
-                                            </DialogHeader>
-
-                                            <DialogFooter className="flex flex-row items-center justify-end gap-5">
-                                                <Button
-                                                    type="button"
-                                                    className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
-                                                    onClick={() => setIsRemoveMemberDialogOpen(false)}
-                                                >
-                                                    Cancelar
-                                                </Button>
-                                                <Button
-                                                    type="button"
-                                                    className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
-                                                    onClick={() => handleRemoveMember(member.userId._id)}
-                                                >
-                                                    Continuar
-                                                </Button>
-                                            </DialogFooter>
-                                        </DialogContent>
-                                    </Dialog>
+                                    <RemoveMemberButton memberId={member.userId._id} partyId={party._id} fetchParty={fetchParty} />
                                 )}
                             </div>
                         </div>
