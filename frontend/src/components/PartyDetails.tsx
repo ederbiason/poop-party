@@ -1,6 +1,6 @@
 import { Party } from "@/types/party"
 import axios from "axios"
-import { CircleMinus, CirclePlus, CircleUserRound, Crown, EllipsisVertical, History, LoaderCircle, LogOut, SquarePlus, Trash2, Users } from "lucide-react"
+import { CircleMinus, CirclePlus, CircleUserRound, Crown, EllipsisVertical, History, LoaderCircle, LogOut, Trash2, Users } from "lucide-react"
 import { useState } from "react"
 import { useNavigate, useOutletContext, useParams } from "react-router-dom"
 import {
@@ -31,8 +31,6 @@ import { User } from "@/types/user"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
-import { Input } from "./ui/input"
-import { Label } from "./ui/label"
 import { useToast } from "@/hooks/use-toast"
 
 export interface PartyContext {
@@ -49,30 +47,13 @@ export function PartyDetails() {
 
     const { toast } = useToast()
 
-    const [targetGoalShit, setTargetGoalShit] = useState<number>(0)
     const [selectedTab, setSelectedTab] = useState<string>("history")
     const [shitCounter, setShitCounter] = useState<number>(1)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [isLeaveGroupDialogOpen, setIsLeaveGroupDialogOpen] = useState(false)
-    const [isCreateGoalDialogOpen, setIsCreateGoalDialogOpen] = useState(false)
 
     const { id: partyId } = useParams()
     const { party, fetchParty, user } = useOutletContext<PartyContext>()
-
-    async function handleGoalSubmit(targetShits: number) {
-        try {
-            await axios.patch(`${BACKEND_DOMAIN}/parties/${partyId}/goals`, { targetShits }, {
-                headers: {
-                    Authorization: `Bearer ${TOKEN}`,
-                },
-            })
-
-            fetchParty()
-            setIsCreateGoalDialogOpen(false)
-        } catch (error: any) {
-            console.error(error.message)
-        }
-    }
 
     async function handleUpdateIndividualShits(amount: number) {
         try {
@@ -150,8 +131,8 @@ export function PartyDetails() {
                     const totalPartyShits = party.members.reduce((total, member) => total + member.individualShits, 0)
 
                     return (
-                        <div className="flex flex-col">
-                            <div className="p-6">
+                        <div className="flex flex-col w-full min-h-screen">
+                            <div className="p-6 w-full ">
                                 <div className="flex items-center justify-between mb-5">
                                     <h1 className="underline text-brown-700 text-3xl font-bold underline-offset-8">
                                         {party.name}
@@ -261,7 +242,7 @@ export function PartyDetails() {
                                     <Carousel className="w-full overflow-hidden">
                                         <CarouselContent className="gap-5">
                                             {party.members.sort((a, b) => b.individualShits - a.individualShits).map((member, index) => (
-                                                <CarouselItem className=" basis-1/3 flex flex-col gap-1 items-center justify-between capitalize text-center relative" key={member.userId._id}>
+                                                <CarouselItem className="basis-1/3 pl-0 flex flex-col gap-1 items-center justify-between capitalize text-center relative" key={member.userId._id}>
                                                     <CircleUserRound size={100} />
 
                                                     <p className="font-semibold flex items-center justify-center gap-1">
@@ -312,7 +293,7 @@ export function PartyDetails() {
                                 </div>
                             </div>
 
-                            <div className="bg-brown-500 w-full h-full rounded-t-2xl pt-6">
+                            <div className="bg-brown-500 w-full rounded-t-2xl pt-6 flex-1 h-full">
                                 <Tabs value={selectedTab} className="w-full h-full">
                                     <TabsList className="w-full flex justify-around text-brown-300">
                                         <TabsTrigger
@@ -330,77 +311,38 @@ export function PartyDetails() {
                                             Metas
                                         </TabsTrigger>
                                     </TabsList>
-                                    <TabsContent value="history" className="w-full h-full px-6 pt-6 flex flex-col gap-3">
-                                        {
-                                            party.history.length === 0 ? (
-                                                <div className="text-center text-brown-300 font-semibold">
-                                                    <p>Não há registros de cagadas ainda.</p>
-                                                </div>
-                                            ) : (
-                                                party.history.slice(-10).reverse().map((lastPoop) => (
-                                                    <div key={lastPoop._id} className="bg-brown-400 rounded-lg p-3 flex items-center gap-3 relative text-brown-300">
-                                                        <CircleUserRound size={60} />
-
-                                                        <div className="">
-                                                            <p className="capitalize font-semibold text-lg">
-                                                                {lastPoop.userId.name}
-                                                            </p>
-
-                                                            <p className="font-semibold text-lg">
-                                                                {`${moment(lastPoop.shitTime).format("DD/MM - HH:mm")} ${getDayPeriod(lastPoop.shitTime)}`}
-                                                            </p>
-                                                        </div>
-
-                                                        <History className="absolute top-1 right-1" />
+                                    <TabsContent value="history" className="w-full h-full p-6">
+                                        <div className="flex flex-col gap-3">
+                                            {
+                                                party.history.length === 0 ? (
+                                                    <div className="text-center text-brown-300 font-semibold">
+                                                        <p>Não há registros de cagadas ainda.</p>
                                                     </div>
-                                                ))
-                                            )
-                                        }
+                                                ) : (
+                                                    party.history.slice(-10).reverse().map((lastPoop) => (
+                                                        <div key={lastPoop._id} className="bg-brown-400 rounded-lg p-3 flex items-center gap-3 relative text-brown-300">
+                                                            <CircleUserRound size={60} />
+
+                                                            <div className="">
+                                                                <p className="capitalize font-semibold text-lg">
+                                                                    {lastPoop.userId.name}
+                                                                </p>
+
+                                                                <p className="font-semibold text-lg">
+                                                                    {`${moment(lastPoop.shitTime).format("DD/MM - HH:mm")} ${getDayPeriod(lastPoop.shitTime)}`}
+                                                                </p>
+                                                            </div>
+
+                                                            <History className="absolute top-1 right-1" />
+                                                        </div>
+                                                    ))
+                                                )
+                                            }
+                                        </div>
                                     </TabsContent>
 
-                                    <TabsContent value="goals" className="w-full h-full px-6 flex flex-col gap-5 items-end mb-6">
-                                        {
-                                            party.createdBy === user!._id && (
-                                                <Dialog open={isCreateGoalDialogOpen} onOpenChange={setIsCreateGoalDialogOpen}>
-                                                    <DialogTrigger
-                                                        className="w-fit items-center text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold text-base flex p-2 px-3 rounded-md gap-2"
-                                                        onClick={() => setIsCreateGoalDialogOpen(true)}
-                                                    >
-                                                        <SquarePlus />
-                                                        Criar meta
-                                                    </DialogTrigger>
-                                                    <DialogContent className="bg-brown-100 rounded-lg">
-                                                        <DialogHeader className="text-start">
-                                                            <DialogTitle className="text-brown-700 text-2xl">Crie uma meta 🎯</DialogTitle>
-                                                            <DialogDescription className="text-brown-500">
-                                                                Preencha o campo abaixo e crie sua meta!
-                                                            </DialogDescription>
-                                                        </DialogHeader>
-
-                                                        <div className="flex flex-col gap-3">
-                                                            <Label>Número alvo de cagadas</Label>
-                                                            <Input
-                                                                type="number"
-                                                                placeholder="Digite o número de cagadas alvo"
-                                                                className="bg-brown-300 border-brown-600"
-                                                                min={1}
-                                                                onChange={(e) => Number(e.target.value) > 1 && setTargetGoalShit(Number(e.target.value))}
-                                                            />
-                                                        </div>
-
-                                                        <Button
-                                                            type="submit"
-                                                            onClick={() => handleGoalSubmit(targetGoalShit)}
-                                                            className="bg-brown-800 hover:bg-brown-500 mt-2"
-                                                        >
-                                                            Criar Meta
-                                                        </Button>
-                                                    </DialogContent>
-                                                </Dialog>
-                                            )
-                                        }
-
-                                        <div className="bg-brown-400 p-5 rounded-lg flex flex-col gap-5 w-full">
+                                    <TabsContent value="goals" className="w-full h-full p-6">
+                                        <div className="bg-brown-400 p-5 rounded-lg flex flex-col gap-5 w-full h-full">
                                             {
                                                 party.goals.length === 0 ? (
                                                     <div className="text-center text-brown-300 font-semibold">

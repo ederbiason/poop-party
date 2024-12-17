@@ -7,6 +7,7 @@ import { MainLayout } from '@/components/MainLayout'
 import { PartyDetails } from '@/components/PartyDetails'
 import { MemberList } from '@/components/MemberList'
 import { PartyWrapper } from '@/components/PartyWrapper'
+import { GoalList } from '@/components/GoalList'
 
 export function App() {
   return (
@@ -21,6 +22,7 @@ export function App() {
             <Route path="/party/:id" element={<PartyWrapper />}>
               <Route index element={<PartyDetails />} />
               <Route path="members" element={<MemberList />} />
+              <Route path="goals" element={<GoalList />} />
             </Route>
           </Route>
         </Route>
