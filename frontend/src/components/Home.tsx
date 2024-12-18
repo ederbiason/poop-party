@@ -97,8 +97,8 @@ export function Home() {
                                                     </div>
                                                 </div>
 
-                                                <div className="font-semibold">
-                                                    <p className="text-end">{index + 1}°</p>
+                                                <div className="font-semibold text-end">
+                                                    <p>{index + 1}°</p>
                                                     <p>
                                                         {timePassed}
                                                     </p>

@@ -1,6 +1,6 @@
 import { Party } from "@/types/party"
 import axios from "axios"
-import { CircleMinus, CirclePlus, CircleUserRound, Crown, EllipsisVertical, History, LoaderCircle, LogOut, Trash2, Users } from "lucide-react"
+import { CircleMinus, CirclePlus, CircleUserRound, Crown, EllipsisVertical, Goal, History, LoaderCircle, LogOut, Trash2, Users } from "lucide-react"
 import { useState } from "react"
 import { useNavigate, useOutletContext, useParams } from "react-router-dom"
 import {
@@ -191,6 +191,11 @@ export function PartyDetails() {
                                                         <DropdownMenuItem onClick={() => navigate('members')}>
                                                             <Users />
                                                             Membros
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuItem onClick={() => navigate('goals')}>
+                                                            <Goal />
+                                                            Metas
                                                         </DropdownMenuItem>
                                                     </>
                                                 ) : (
