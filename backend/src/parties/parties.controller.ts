@@ -41,6 +41,19 @@ export class PartiesController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Patch(':id/goal/edit')
+  editGoal(
+    @Param('id') partyId: string,
+    @Body('newTargetShits') newTargetShits: number,
+    @Body('goalId') goalId: string,
+    @Request() req
+  ) {
+    const userId = req.user._id
+
+    return this.partiesService.editGoal(partyId, userId, goalId, newTargetShits)
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id/shits')
   updateIndividualShits(
     @Param('id') partyId: string,

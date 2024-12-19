@@ -26,9 +26,10 @@ export class Party extends Document {
 
   @Prop([{ 
     targetShits: { type: Number, required: true },
-    completed: { type: Boolean, default: false } 
+    completed: { type: Boolean, default: false },
+    _id: { type: Types.ObjectId }
   }]) 
-  goals: { targetShits: number; completed: boolean }[];
+  goals: { _id?: Types.ObjectId; targetShits: number; completed: boolean }[];
 }
 
 export const PartySchema = SchemaFactory.createForClass(Party)
