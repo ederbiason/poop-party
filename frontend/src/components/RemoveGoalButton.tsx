@@ -10,6 +10,8 @@ import {
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { SquareX } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import axios from "axios"
 
 interface RemoveGoalButtonProps {
     goal: {
@@ -17,13 +19,36 @@ interface RemoveGoalButtonProps {
         targetShits: number;
         completed: boolean;
     }
+    fetchParty: () => Promise<void>
+    partyId: string
 }
 
-export function RemoveGoalButton({ goal }: RemoveGoalButtonProps) {
+export function RemoveGoalButton({ goal, fetchParty, partyId }: RemoveGoalButtonProps) {
+    const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
+    const TOKEN = localStorage.getItem('token')
+
     const [isRemoveGoalDialogOpen, setIsRemoveGoalDialogOpen] = useState(false)
 
-    async function handleRemoveGoal(goalId: string) {
+    const { toast } = useToast()
 
+    async function handleRemoveGoal(goalId: string) {
+        try {
+            await axios.patch(`${BACKEND_DOMAIN}/parties/${partyId}/goals/${goalId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                }
+            })
+
+            setIsRemoveGoalDialogOpen(false)
+            fetchParty()
+            toast({
+                variant: "default",
+                title: "Sucesso",
+                description: "Você removeu a meta do grupo!",
+            })
+        } catch (error: any) {
+            console.error(error.message)
+        }
     }
 
     return (

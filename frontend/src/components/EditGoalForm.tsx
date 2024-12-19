@@ -12,6 +12,8 @@ import { SquarePen } from "lucide-react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/hooks/use-toast"
+import axios from "axios"
 
 interface EditGoalFormProps {
     goal: {
@@ -19,14 +21,37 @@ interface EditGoalFormProps {
         targetShits: number;
         completed: boolean;
     }
+    fetchParty: () => Promise<void>
+    partyId: string
 }
 
-export function EditGoalForm({ goal }: EditGoalFormProps) {
+export function EditGoalForm({ goal, fetchParty, partyId }: EditGoalFormProps) {
+    const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
+    const TOKEN = localStorage.getItem('token')
+
     const [isEditGoalDialogOpen, setIsEditGoalDialogOpen] = useState(false)
-    const [newShitTarget, setNewShitTarget] = useState<number>(1)
+    const [newTargetShits, setNewTargetShits] = useState<number>(1)
+
+    const { toast } = useToast()
 
     async function handleEditGoal(goalId: string) {
+        try {
+            await axios.patch(`${BACKEND_DOMAIN}/parties/${partyId}/goal/edit`, {newTargetShits, goalId}, {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                }
+            })
 
+            setIsEditGoalDialogOpen(false)
+            fetchParty()
+            toast({
+                variant: "default",
+                title: "Sucesso",
+                description: "A meta foi alterada com sucesso!",
+            })
+        } catch (error: any) {
+            console.error(error.message)
+        }
     }
 
     return (
@@ -49,7 +74,7 @@ export function EditGoalForm({ goal }: EditGoalFormProps) {
 
                 <div className="flex flex-col gap-3">
                     <p className="italic mb-1">
-                        Você está editando a meta: <span className="capitalize font-semibold">{goal.targetShits}</span>
+                        Você está editando a meta: <span className="capitalize font-semibold">{goal.targetShits} 💩</span>
                     </p>
                     <Label>
                         Num. alvo de cagadas
@@ -59,7 +84,7 @@ export function EditGoalForm({ goal }: EditGoalFormProps) {
                         type="number"
                         placeholder="Digite o número alvo de cagadas"
                         className="bg-brown-300 border-brown-600"
-                        onChange={(e) => setNewShitTarget(Number(e.target.value))}
+                        onChange={(e) => setNewTargetShits(Number(e.target.value))}
                     />
                 </div>
 

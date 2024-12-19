@@ -54,9 +54,9 @@ export function GoalList() {
                             </div>
 
                             <div className="flex flex-col justify-end gap-3 items-center">
-                                <EditGoalForm goal={goal} />
+                                <EditGoalForm goal={goal} fetchParty={fetchParty} partyId={party._id} />
                                 
-                                <RemoveGoalButton goal={goal} />
+                                <RemoveGoalButton goal={goal} fetchParty={fetchParty} partyId={party._id} />
                             </div>
                         </div>
                     ))}
