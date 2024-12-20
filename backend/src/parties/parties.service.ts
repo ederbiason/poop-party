@@ -89,7 +89,7 @@ export class PartiesService {
     return party.save()
   }
 
-  async editGoal(partyId: string, userId: string, goalId: string, newTargetShits: number): Promise<Party> {
+  async editGoal(partyId: string, userId: string, goalId: string, newTargetShits?: number, completed?: boolean): Promise<Party> {
     const party = await this.partyModel.findById(partyId)
     if (!party) throw new NotFoundException("Party não encontrada!")
 
@@ -98,11 +98,16 @@ export class PartiesService {
     const goal = party.goals.find(goal => goal._id.equals(goalId))
     if (!goal) throw new NotFoundException('Meta não encontrada na party')
 
-    const goalExist = party.goals.find(goal => goal.targetShits === newTargetShits)
-    if (goalExist) throw new BadRequestException("O novo valor da meta já existe")
+    if (newTargetShits !== undefined) {
+      const goalExist = party.goals.find(goal => goal.targetShits === newTargetShits)
+      if (goalExist) throw new BadRequestException("O novo valor da meta já existe")
 
-    goal.targetShits = newTargetShits
-    if (goal.targetShits <= 0) goal.targetShits = 1
+      goal.targetShits = newTargetShits > 0 ? newTargetShits : 1
+    }
+
+    if (completed !== undefined) {
+      goal.completed = completed
+    }
 
     await party.save()
 
