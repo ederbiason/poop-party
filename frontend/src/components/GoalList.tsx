@@ -1,13 +1,18 @@
 import { useOutletContext } from "react-router-dom"
 import { PartyContext } from "@/components/PartyDetails"
 import { AddGoalForm } from "@/components/AddGoalForm"
-import { Frown, Loader } from "lucide-react"
+import { BadgeCheck, Frown, Loader, SquareCheckBig } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { EditGoalForm } from "./EditGoalForm"
 import { RemoveGoalButton } from "./RemoveGoalButton"
+import axios from "axios"
+import { useToast } from "@/hooks/use-toast"
 
 export function GoalList() {
+    const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
+    const TOKEN = localStorage.getItem('token')
+
     const { party, fetchParty } = useOutletContext<PartyContext>()
 
     if (!party) {
@@ -20,6 +25,27 @@ export function GoalList() {
     }
 
     const totalPartyShits = party.members.reduce((total, member) => total + member.individualShits, 0)
+
+    const { toast } = useToast()
+
+    async function handleCompleteGoal(goalId: string) {
+        try {
+            await axios.patch(`${BACKEND_DOMAIN}/parties/${party._id}/goal/edit`, {completed: true, goalId}, {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                }
+            })
+
+            fetchParty()
+            toast({
+                variant: "default",
+                title: "Sucesso",
+                description: "A meta foi concluída com sucesso!",
+            })
+        } catch (error: any) {
+            console.error(error.message)
+        }
+    }
 
     return (
         <div className="w-full h-full p-6 bg-brown-300">
@@ -54,7 +80,17 @@ export function GoalList() {
                             </div>
 
                             <div className="flex flex-col justify-end gap-3 items-center">
-                                <EditGoalForm goal={goal} fetchParty={fetchParty} partyId={party._id} />
+                                {goal.completed ? (
+                                    <BadgeCheck className="text-green-600" fill="white" />
+                                ) : totalPartyShits >= goal.targetShits ? (
+                                    <SquareCheckBig 
+                                        className="text-black animate-pulse" 
+                                        fill="green"
+                                        onClick={() => handleCompleteGoal(goal._id)}
+                                    />
+                                ) : (
+                                    <EditGoalForm goal={goal} fetchParty={fetchParty} partyId={party._id} />
+                                )}
                                 
                                 <RemoveGoalButton goal={goal} fetchParty={fetchParty} partyId={party._id} />
                             </div>

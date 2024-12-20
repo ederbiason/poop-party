@@ -129,6 +129,7 @@ export function PartyDetails() {
             {party ? (
                 (() => {
                     const totalPartyShits = party.members.reduce((total, member) => total + member.individualShits, 0)
+                    const totalGoalsCompleted = party.goals.reduce((total, goal) => { return goal.completed ? total + 1 : total }, 0)
 
                     return (
                         <div className="flex flex-col w-full min-h-screen">
@@ -148,6 +149,16 @@ export function PartyDetails() {
                                             {
                                                 party.createdBy === user!._id ? (
                                                     <>
+                                                        <DropdownMenuItem onClick={() => navigate('members')}>
+                                                            <Users />
+                                                            Membros
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuItem onClick={() => navigate('goals')}>
+                                                            <Goal />
+                                                            Metas
+                                                        </DropdownMenuItem>
+
                                                         <DropdownMenuItem>
                                                             <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                                                                 <DialogTrigger
@@ -186,16 +197,6 @@ export function PartyDetails() {
                                                                     </DialogFooter>
                                                                 </DialogContent>
                                                             </Dialog>
-                                                        </DropdownMenuItem>
-
-                                                        <DropdownMenuItem onClick={() => navigate('members')}>
-                                                            <Users />
-                                                            Membros
-                                                        </DropdownMenuItem>
-
-                                                        <DropdownMenuItem onClick={() => navigate('goals')}>
-                                                            <Goal />
-                                                            Metas
                                                         </DropdownMenuItem>
                                                     </>
                                                 ) : (
@@ -346,7 +347,15 @@ export function PartyDetails() {
                                         </div>
                                     </TabsContent>
 
-                                    <TabsContent value="goals" className="w-full h-full p-6">
+                                    <TabsContent value="goals" className="w-full h-full p-6 pt-4">
+                                        {
+                                            party.goals.length !== 0 && (
+                                                <p className="text-brown-300 font-semibold mb-2">
+                                                    {totalGoalsCompleted} de {party.goals.length} concluído
+                                                </p>
+                                            )
+                                        }
+
                                         <div className="bg-brown-400 p-5 rounded-lg flex flex-col gap-5 w-full h-full">
                                             {
                                                 party.goals.length === 0 ? (
@@ -359,7 +368,7 @@ export function PartyDetails() {
                                                             <Checkbox
                                                                 disabled
                                                                 className="w-5 h-5"
-                                                                checked={goal.targetShits <= totalPartyShits}
+                                                                checked={goal.completed}
                                                             />
 
                                                             <Progress value={((totalPartyShits) / goal.targetShits) * 100} className="h-2" />
