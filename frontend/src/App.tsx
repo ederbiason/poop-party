@@ -8,6 +8,7 @@ import { PartyDetails } from '@/components/PartyDetails'
 import { MemberList } from '@/components/MemberList'
 import { PartyWrapper } from '@/components/PartyWrapper'
 import { GoalList } from '@/components/GoalList'
+import { Profile } from '@/components/Profile'
 
 export function App() {
   return (
@@ -24,6 +25,8 @@ export function App() {
               <Route path="members" element={<MemberList />} />
               <Route path="goals" element={<GoalList />} />
             </Route>
+
+            <Route path="/profile/:id" element={<Profile />} />
           </Route>
         </Route>
       </Routes>
