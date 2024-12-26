@@ -115,7 +115,7 @@ export function Home() {
                         ))}
                     </div>
                 ) : (
-                    <div className="py-5 mt-3 flex gap-2 font-semibold items-center justify-center text-brown-700">
+                    <div className="py-5 mt-3 flex gap-2 font-semibold justify-center text-brown-700 min-h-screen">
                         <p>Você não faz parte de nenhuma party!</p>
                         <Frown />
                     </div>
