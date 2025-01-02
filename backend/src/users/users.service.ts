@@ -63,6 +63,20 @@ export class UsersService {
       }
     }
 
+    if (updateUserDto.newPassword) {
+      const passwordMatch = await bcrypt.compare(updateUserDto.newPassword, user.password)
+
+      if (passwordMatch) {
+        throw new HttpException('Você não pode usar a mesma senha atual.', 400)
+      }
+
+      const salt = await bcrypt.genSalt(10)
+      const hashedNewPassword = await bcrypt.hash(updateUserDto.newPassword, salt)
+      user.password = hashedNewPassword
+    }
+
+    await user.save()
+
     return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true })
   }
 
