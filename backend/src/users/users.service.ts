@@ -64,9 +64,13 @@ export class UsersService {
     }
 
     if (updateUserDto.newPassword) {
-      const passwordMatch = await bcrypt.compare(updateUserDto.newPassword, user.password)
+      const currentPasswordMatch = await bcrypt.compare(updateUserDto.password, user.password)
 
-      if (passwordMatch) {
+      if(!currentPasswordMatch) throw new HttpException('A senha atual está errada.', 400)
+
+      const newPasswordMatch = await bcrypt.compare(updateUserDto.newPassword, user.password)
+
+      if (newPasswordMatch) {
         throw new HttpException('Você não pode usar a mesma senha atual.', 400)
       }
 
