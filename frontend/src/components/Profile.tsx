@@ -1,60 +1,16 @@
-import { Party } from "@/types/party"
 import { User } from "@/types/user"
-import axios from "axios"
 import { Loader, PencilLine } from "lucide-react"
-import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
+
+export interface ProfileContext {
+    user: User
+    maxIndividualShits: number
+}
 
 export function Profile() {
-    const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
-    const TOKEN = localStorage.getItem('token')
-    const { id: userId } = useParams()
+    const {user, maxIndividualShits} = useOutletContext<ProfileContext>()
 
-    const [user, setUser] = useState<User>()
-    const [maxIndividualShits, setMaxIndividualShits] = useState<number>(0)
-
-    useEffect(() => {
-        async function fetchUser() {
-            try {
-                const response = await axios.get(`${BACKEND_DOMAIN}/users/${userId}`, {
-                    headers: {
-                        Authorization: `Bearer ${TOKEN}`,
-                    },
-                })
-                setUser(response.data)
-            } catch (error: any) {
-                console.error(error.message)
-            }
-        }
-
-        fetchUser()
-    }, [])
-
-    useEffect(() => {
-        async function fetchUserPartyDetails() {
-            try {
-                const response = await axios.get(`${BACKEND_DOMAIN}/parties/user/${userId}`, {
-                    headers: {
-                        Authorization: `Bearer ${TOKEN}`,
-                    },
-                })
-
-                const parties: Party[] = response.data
-
-                const maxShits = parties.reduce((max, party) => {
-                    const userShits = party.members.find(member => member.userId._id === userId)?.individualShits || 0
-                    return Math.max(max, userShits)
-                }, 0)
-
-                setMaxIndividualShits(maxShits)
-            } catch (error: any) {
-                console.error(error)
-            }
-        }
-
-        fetchUserPartyDetails()
-    }, [userId])
-
+    const navigate = useNavigate()
 
     if (!user) {
         return (
@@ -66,7 +22,7 @@ export function Profile() {
     }
 
     return (
-        <div className="w-full min-h-screen overflow-hidden">
+        <div className="w-full h-full overflow-hidden">
             <div className="w-full flex flex-col items-center z-10 relative pt-10">
                 <div
                     className="w-[570px] h-[500px] bg-brown-500 absolute rounded-full -top-80"
@@ -82,9 +38,13 @@ export function Profile() {
                     {user?.name}
                 </h1>
 
-                {/* party de outro commit esse button de edit */}
-                <div className="absolute z-20 top-10 right-28 bg-blue-300 rounded-full p-2 border border-blue-900 hover:border-blue-200">
-                    <PencilLine size={28} fill="#bfdbfe" strokeWidth={2} />
+                <div className="absolute z-20 top-10 right-28 bg-blue-300 rounded-full p-2 border border-blue-900 hover:border-blue-200 cursor-pointer">
+                    <PencilLine 
+                        size={28} 
+                        fill="#bfdbfe" 
+                        strokeWidth={2} 
+                        onClick={() => navigate("edit")} 
+                    />
                 </div>
             </div>
 

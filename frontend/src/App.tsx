@@ -9,6 +9,8 @@ import { MemberList } from '@/components/MemberList'
 import { PartyWrapper } from '@/components/PartyWrapper'
 import { GoalList } from '@/components/GoalList'
 import { Profile } from '@/components/Profile'
+import { ProfileWrapper } from './components/ProfileWrapper'
+import { ProfileEditForm } from './components/ProfileEditForm'
 
 export function App() {
   return (
@@ -26,7 +28,10 @@ export function App() {
               <Route path="goals" element={<GoalList />} />
             </Route>
 
-            <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/profile/:id" element={<ProfileWrapper />}>
+              <Route index element={<Profile />} />
+              <Route path="edit" element={<ProfileEditForm />} />
+            </Route>
           </Route>
         </Route>
       </Routes>
