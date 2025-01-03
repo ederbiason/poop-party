@@ -1,4 +1,4 @@
-import { CircleUserRound, Frown } from "lucide-react"
+import { CircleUserRound, Frown, Trophy } from "lucide-react"
 import { CreatePartyForm } from "@/components/CreatePartyForm"
 import axios from "axios"
 import { useEffect, useState } from "react"
@@ -71,48 +71,83 @@ export function Home() {
             {
                 parties.length > 0 ? (
                     <div className="py-5 mt-3 flex flex-col gap-6">
-                        {parties.map((party) => (
-                            <div key={party._id} className="rounded-3xl bg-brown-500 cursor-pointer" onClick={() => navigate(`/party/${party._id}`)}>
-                                <p className="text-center p-3 text-white text-2xl font-bold">
-                                    {party.name}
-                                </p>
+                        {parties.map((party) => {
+                            const memberWithMostPoops = party.members.sort((a, b) => b.individualShits - a.individualShits)[0];
 
-                                <div className="bg-brown-200 px-3 flex flex-col divide-y divide-brown-500">
-                                    {party.members.sort((a, b) => b.individualShits - a.individualShits).map((member, index) => {
-                                        const lastPoopLog = party.history
-                                            .filter((log: any) => log.userId === member.userId._id)
-                                            .sort((a, b) => new Date(b.shitTime).getTime() - new Date(a.shitTime).getTime())[0]
+                            return (
+                                <div key={party._id} className="rounded-3xl bg-brown-500 cursor-pointer" onClick={() => navigate(`/party/${party._id}`)}>
+                                    <p className="text-center p-3 text-white text-2xl font-bold">
+                                        {party.name}
+                                    </p>
 
-                                        const timePassed = lastPoopLog
-                                            ? moment(lastPoopLog.shitTime).fromNow()
-                                            : "Sem registro"
+                                    <div className="bg-brown-200 px-3 flex flex-col divide-y divide-brown-500">
+                                        {new Date(party.endDate).getTime() >= Date.now() ? (
+                                            party.members.sort((a, b) => b.individualShits - a.individualShits).map((member, index) => {
+                                                const lastPoopLog = party.history
+                                                    .filter((log: any) => log.userId === member.userId._id)
+                                                    .sort((a, b) => new Date(b.shitTime).getTime() - new Date(a.shitTime).getTime())[0]
 
-                                        return (
-                                            <div key={member.userId._id} className="flex items-center justify-between py-2">
-                                                <div className="flex justify-between items-center gap-2">
-                                                    <CircleUserRound size={55} />
-                                                    <div className="font-semibold">
-                                                        <p className="capitalize">{member.userId.name}</p>
-                                                        <p>💩: {member.individualShits}</p>
+                                                const timePassed = lastPoopLog
+                                                    ? moment(lastPoopLog.shitTime).fromNow()
+                                                    : "Sem registro"
+
+                                                return (
+                                                    <div key={member.userId._id} className="flex items-center justify-between py-2">
+                                                        <div className="flex justify-between items-center gap-2">
+                                                            <CircleUserRound size={55} />
+                                                            <div className="font-semibold">
+                                                                <p className="capitalize">{member.userId.name}</p>
+                                                                <p>💩: {member.individualShits}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="font-semibold text-end">
+                                                            <p>{index + 1}°</p>
+                                                            <p>
+                                                                {timePassed}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })
+                                        ) : (
+                                            <div className="py-2">
+                                                <p className="text-end text-sm">
+                                                    Finalizada em: <span className="font-semibold">{moment(party.endDate).format("DD/MM/YYYY")} </span>
+                                                </p>
+
+                                                <div className="flex flex-col gap-2">
+                                                    <h1 className="text-2xl font-bold">
+                                                        Ganhador:
+                                                    </h1>
+                                                    <div className="flex items-center gap-5">
+                                                        <div>
+                                                            <CircleUserRound size={80} />
+                                                        </div>
+                                                        <div className="font-semibold flex flex-col gap-1">
+                                                            <p className="text-xl capitalize flex items-center gap-2">
+                                                                <div className="p-2 bg-yellow-300 rounded-full">
+                                                                    <Trophy className="" />
+                                                                </div>
+                                                                {memberWithMostPoops.userId.name}
+                                                            </p>
+                                                            <p className="text-lg px-2">
+                                                                {memberWithMostPoops.individualShits} 💩
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
-
-                                                <div className="font-semibold text-end">
-                                                    <p>{index + 1}°</p>
-                                                    <p>
-                                                        {timePassed}
-                                                    </p>
-                                                </div>
                                             </div>
-                                        )
-                                    })}
-                                </div>
+                                        )}
 
-                                <p className="text-center p-3 text-white text-2xl font-bold">
-                                    Total: {party.members.reduce((total, member) => total + member.individualShits, 0)}
-                                </p>
-                            </div>
-                        ))}
+                                    </div>
+
+                                    <p className="text-center p-3 text-white text-2xl font-bold">
+                                        Total: {party.members.reduce((total, member) => total + member.individualShits, 0)}
+                                    </p>
+                                </div>
+                            )
+                        })}
                     </div>
                 ) : (
                     <div className="py-5 mt-3 flex gap-2 font-semibold justify-center text-brown-700 min-h-screen">

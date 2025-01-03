@@ -152,7 +152,7 @@ export function PartyDetails() {
                                             <DropdownMenuLabel>Grupo</DropdownMenuLabel>
                                             <DropdownMenuSeparator className="" />
                                             {
-                                                party.createdBy === user!._id ? (
+                                                party.createdBy === user!._id && new Date(party.endDate).getTime() >= Date.now() ? (
                                                     <>
                                                         <DropdownMenuItem onClick={() => navigate('members')}>
                                                             <Users />
@@ -204,6 +204,46 @@ export function PartyDetails() {
                                                             </Dialog>
                                                         </DropdownMenuItem>
                                                     </>
+                                                ) : party.createdBy === user!._id && new Date(party.endDate).getTime() < Date.now() ? (
+                                                    <DropdownMenuItem>
+                                                        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                                                            <DialogTrigger
+                                                                className="flex items-center gap-2"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    setIsDeleteDialogOpen(true)
+                                                                }}
+                                                            >
+                                                                <Trash2 />
+                                                                Deletar grupo
+                                                            </DialogTrigger>
+                                                            <DialogContent className="bg-brown-100 rounded-lg">
+                                                                <DialogHeader className="text-start">
+                                                                    <DialogTitle className="text-brown-700 text-2xl">Tem certeza que deseja deletar o grupo?</DialogTitle>
+                                                                    <DialogDescription className="text-brown-500">
+                                                                        Essa ação não pode ser desfeita. Isso vai permanentemente deletar o grupo.
+                                                                    </DialogDescription>
+                                                                </DialogHeader>
+
+                                                                <DialogFooter className="flex flex-row items-center justify-end gap-5">
+                                                                    <Button
+                                                                        type="button"
+                                                                        className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
+                                                                        onClick={() => setIsDeleteDialogOpen(false)}
+                                                                    >
+                                                                        Cancelar
+                                                                    </Button>
+                                                                    <Button
+                                                                        type="button"
+                                                                        className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
+                                                                        onClick={() => handleDeleteGroup()}
+                                                                    >
+                                                                        Continuar
+                                                                    </Button>
+                                                                </DialogFooter>
+                                                            </DialogContent>
+                                                        </Dialog>
+                                                    </DropdownMenuItem>
                                                 ) : (
                                                     <DropdownMenuItem>
                                                         <Dialog open={isLeaveGroupDialogOpen} onOpenChange={setIsLeaveGroupDialogOpen}>
@@ -297,6 +337,7 @@ export function PartyDetails() {
                                             type="button"
                                             className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
                                             onClick={() => handleUpdateIndividualShits(shitCounter)}
+                                            disabled={new Date(party.endDate).getTime() < Date.now()}
                                         >
                                             Contabilizar 💩
                                         </Button>
