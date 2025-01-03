@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import confetti from "https://cdn.skypack.dev/canvas-confetti"
 
 export interface PartyContext {
     party: Party
@@ -55,6 +56,8 @@ export function PartyDetails() {
     const { id: partyId } = useParams()
     const { party, fetchParty, user } = useOutletContext<PartyContext>()
 
+    let poopSound = new Audio('/sounds/poop.wav')
+
     async function handleUpdateIndividualShits(amount: number) {
         try {
             await axios.patch(`${BACKEND_DOMAIN}/parties/${partyId}/shits`, { amount }, {
@@ -70,6 +73,8 @@ export function PartyDetails() {
                 title: "Bela cagada, colega! 😉",
                 description: "Cagada contabilizada com sucesso",
             })
+            poopSound.play()
+            confetti()
         } catch (error: any) {
             console.error(error.message)
         }
