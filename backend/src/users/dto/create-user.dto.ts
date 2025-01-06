@@ -1,6 +1,5 @@
-import { IsEmail, IsString, MinLength, IsNotEmpty, IsArray, IsNumber, IsOptional } from 'class-validator'
-import { Expose, Transform, Type } from 'class-transformer'
-import { Types } from 'mongoose'
+import { IsEmail, IsString, MinLength, IsNotEmpty, IsNumber, IsOptional, Min } from 'class-validator'
+import { Expose, Transform } from 'class-transformer'
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -18,4 +17,15 @@ export class CreateUserDto {
     @IsString()
     @Expose()
     name: string
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0, { message: 'O número de vitórias deve ser 0 ou maior.' })
+    @Expose()
+    partyWins: number
+
+    @IsOptional()
+    @IsString()
+    @Expose()
+    profileImage: string
 }

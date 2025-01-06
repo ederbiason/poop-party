@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types'
 import { CreateUserDto } from './create-user.dto'
-import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator'
+import { IsEmail, IsNumber, IsOptional, IsString, Min, MinLength } from 'class-validator'
 import { Expose } from 'class-transformer'
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
@@ -22,4 +22,15 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     @IsOptional()
     @IsString()
     name: string
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0, { message: 'O número de vitórias deve ser 0 ou maior.' })
+    @Expose()
+    partyWins: number
+
+    @IsOptional()
+    @IsString()
+    @Expose()
+    profileImage: string
 }

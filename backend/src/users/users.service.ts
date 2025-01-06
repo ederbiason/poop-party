@@ -79,9 +79,10 @@ export class UsersService {
       user.password = hashedNewPassword
     }
 
+    Object.assign(user, updateUserDto)
     await user.save()
 
-    return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true })
+    return user
   }
 
   async remove(id: string) {
