@@ -6,4 +6,6 @@ export type User = {
     parties: string[]
     createdAt: string
     updatedAt: string
+    partyWins: number
+    profileImage: string
 }

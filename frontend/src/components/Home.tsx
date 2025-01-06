@@ -112,7 +112,7 @@ export function Home() {
                                             })
                                         ) : (
                                             <div className="py-2">
-                                                <p className="text-end text-sm">
+                                                <p className="text-end text-sm underline">
                                                     Finalizada em: <span className="font-semibold">{moment(party.endDate).format("DD/MM/YYYY")} </span>
                                                 </p>
 
@@ -120,6 +120,7 @@ export function Home() {
                                                     <h1 className="text-2xl font-bold">
                                                         Ganhador:
                                                     </h1>
+                                                    <hr className="border-brown-400" />
                                                     <div className="flex items-center gap-5">
                                                         <div>
                                                             <CircleUserRound size={80} />

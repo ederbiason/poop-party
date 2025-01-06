@@ -5,17 +5,20 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { z } from "zod"
-import { Loader, Lock, Mail, UserRoundPen } from "lucide-react"
+import { useDropzone } from "react-dropzone"
+import { Loader, Lock, Mail, UserRound, UserRoundPen } from "lucide-react"
 import { useOutletContext } from "react-router-dom"
 import { ProfileContext } from "./Profile"
 import { useToast } from "@/hooks/use-toast"
-import { useEffect } from "react"
+import { useCallback, useEffect, useState } from "react"
+
 
 const EditFormSchema = z.object({
     email: z.string().email({ message: "Email inválido" }).optional(),
     name: z.string().optional(),
     password: z.string().optional(),
     newPassword: z.string().optional(),
+    profileImage: z.string().optional()
 }).transform((data) => {
     return Object.fromEntries(
         Object.entries(data).filter(([_, value]) => value !== "")
@@ -23,6 +26,8 @@ const EditFormSchema = z.object({
 })
 
 export function ProfileEditForm() {
+    const [preview, setPreview] = useState<string | ArrayBuffer | null>("")
+
     const { user } = useOutletContext<ProfileContext>()
 
     const { toast } = useToast()
@@ -34,6 +39,7 @@ export function ProfileEditForm() {
             email: user?.email || "",
             password: "",
             newPassword: "",
+            profileImage: user?.profileImage || ""
         },
     })
 
@@ -50,15 +56,43 @@ export function ProfileEditForm() {
         }
     }, [user, reset])
 
+    const onDrop = useCallback(
+        (acceptedFiles: File[]) => {
+            const reader = new FileReader()
+            try {
+                reader.onload = () => {
+                    const imgBase64 = reader.result as string
+                    setPreview(imgBase64)
+                    form.setValue("profileImage", imgBase64)
+                    form.clearErrors("profileImage")
+                }
+                reader.readAsDataURL(acceptedFiles[0])
+            } catch (error) {
+                setPreview(null)
+            }
+        },
+        [form],
+    )
+
+    const { getRootProps, getInputProps, fileRejections } = useDropzone({
+        onDrop,
+        maxFiles: 1,
+        maxSize: 1000000,
+        accept: { "image/png": [], "image/jpg": [], "image/jpeg": [] },
+    })
+
+
     async function onSubmit(values: z.infer<typeof EditFormSchema>) {
         try {
-            await axios.patch(`${import.meta.env.VITE_BACKEND_DOMAIN}/users/${user._id}`, values)
+            console.log(values)
+            const response = await axios.patch(`${import.meta.env.VITE_BACKEND_DOMAIN}/users/${user._id}`, values)
 
             toast({
                 variant: "default",
                 title: "Sucesso",
                 description: "Você atualizou o seu perfil!",
             })
+            console.log(response.data)
         } catch (error: any) {
             console.log(error)
         }
@@ -84,6 +118,47 @@ export function ProfileEditForm() {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)}>
                             <div className="flex flex-col gap-3">
+                                <FormField
+                                    control={form.control}
+                                    name="profileImage"
+                                    render={() => (
+                                        <FormItem className="mx-auto md:w-1/2 flex flex-col items-center">
+                                            <FormLabel
+                                                className={fileRejections.length !== 0 ? "text-destructive" : ""}
+                                            >
+                                                <h2 className="text-brown-700 text-lg font-semibold tracking-tight">
+                                                    Foto de Perfil
+                                                    <span
+                                                        className={
+                                                            form.formState.errors.profileImage || fileRejections.length !== 0
+                                                                ? "text-destructive"
+                                                                : "text-muted-foreground"
+                                                        }
+                                                    ></span>
+                                                </h2>
+                                            </FormLabel>
+
+                                            <FormControl>
+                                                <div
+                                                    {...getRootProps()}
+                                                    className="mx-auto flex cursor-pointer flex-col items-center justify-center border-2 border-dashed border-brown-700 p-2 min-h-40 min-w-40 rounded-full"
+                                                >
+                                                    {preview && (
+                                                        <img
+                                                            src={preview as string}
+                                                            alt="Uploaded profileImage"
+                                                            className="h-40 w-40 rounded-full"
+                                                        />
+                                                    )}
+                                                    <UserRound
+                                                        className={`size-20 ${preview ? "hidden" : "block"}`}
+                                                    />
+                                                    <Input {...getInputProps()} type="file" />
+                                                </div>
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
                                 <FormField
                                     name="name"
                                     render={({ field }) => (
@@ -167,6 +242,6 @@ export function ProfileEditForm() {
                     </Form>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
