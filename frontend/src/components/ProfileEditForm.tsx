@@ -159,13 +159,13 @@ export function ProfileEditForm() {
                                                             <img
                                                                 src={user.profileImage}
                                                                 alt="Imagem de perfil do usuário"
-                                                                className="h-40 w-40 rounded-full"
+                                                                className="h-40 w-40 rounded-full object-cover"
                                                             />
                                                         ) : preview ? (
                                                             <img
                                                                 src={preview as string}
                                                                 alt="Foto que foi enviada pelo usuário"
-                                                                className="h-40 w-40 rounded-full"
+                                                                className="h-40 w-40 rounded-full object-cover"
                                                             />
                                                         ) : (
                                                             <UserRound

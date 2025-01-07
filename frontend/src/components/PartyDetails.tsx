@@ -32,7 +32,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
-import confetti from "https://cdn.skypack.dev/canvas-confetti"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import confetti from "canvas-confetti"
 
 export interface PartyContext {
     party: Party
@@ -290,11 +291,19 @@ export function PartyDetails() {
                                     </DropdownMenu>
                                 </div>
                                 <div className="flex flex-col items-center justify-center gap-5 pt-2">
-                                    <Carousel className="w-full overflow-hidden">
+                                    <Carousel className="w-full overflow-hidden py-1 px-2">
                                         <CarouselContent className="gap-5">
                                             {party.members.sort((a, b) => b.individualShits - a.individualShits).map((member, index) => (
                                                 <CarouselItem className="basis-1/3 pl-0 flex flex-col gap-1 items-center justify-between capitalize text-center relative" key={member.userId._id}>
-                                                    <CircleUserRound size={100} />
+                                                    {
+                                                        member.userId.profileImage !== "" ? (
+                                                            <Avatar className="h-24 w-24 border-2 border-brown-700">
+                                                                <AvatarImage src={member.userId.profileImage} alt="Imagem de perfil do membro" className="object-cover" />
+                                                            </Avatar>
+                                                        ) : (
+                                                            <CircleUserRound size={100} />
+                                                        )
+                                                    }
 
                                                     <p className="font-semibold flex items-center justify-center gap-1">
                                                         {index === 0 && member.individualShits > 0 && (
@@ -373,7 +382,15 @@ export function PartyDetails() {
                                                 ) : (
                                                     party.history.slice(-10).reverse().map((lastPoop) => (
                                                         <div key={lastPoop._id} className="bg-brown-400 rounded-lg p-3 flex items-center gap-3 relative text-brown-300">
-                                                            <CircleUserRound size={60} />
+                                                            {
+                                                                lastPoop.userId.profileImage !== "" ? (
+                                                                    <Avatar className="h-16 w-16 border-2 border-brown-700">
+                                                                        <AvatarImage src={lastPoop.userId.profileImage} alt="Imagem de perfil do membro" className="object-cover" />
+                                                                    </Avatar>
+                                                                ) : (
+                                                                    <CircleUserRound size={100} />
+                                                                )
+                                                            }
 
                                                             <div className="">
                                                                 <p className="capitalize font-semibold text-lg">

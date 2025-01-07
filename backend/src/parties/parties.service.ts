@@ -131,7 +131,7 @@ export class PartiesService {
 
     await party.save()
 
-    return party.populate('history.userId', 'name')
+    return party.populate('history.userId', 'name profileImage')
   }
 
   async editMember(partyId: string, userId: string, memberId: string, amount: number): Promise<Party> {
@@ -232,8 +232,8 @@ export class PartiesService {
   async findPartyById(partyId: string): Promise<Party> {
     const party = await this.partyModel
       .findById(partyId)
-      .populate('history.userId', 'name email')
-      .populate('members.userId', 'name email')
+      .populate('history.userId', 'name email profileImage')
+      .populate('members.userId', 'name email profileImage')
 
     if (!party) throw new NotFoundException('Party não encontrada!')
 
@@ -243,7 +243,7 @@ export class PartiesService {
   async findPartiesByUser(userId: string): Promise<Party[]> {
     const parties = await this.partyModel
       .find({ "members.userId": userId })
-      .populate("members.userId", "name email")
+      .populate("members.userId", "name email profileImage")
       .populate("createdBy", "name email")
 
     if (!parties || parties.length === 0) {

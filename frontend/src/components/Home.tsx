@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { User } from "@/types/user"
 import { Party } from "@/types/party"
 import { useNavigate } from "react-router-dom"
-
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import moment from "moment"
 import 'moment/dist/locale/pt-br'
 moment.locale('pt-br')
@@ -94,7 +94,15 @@ export function Home() {
                                                 return (
                                                     <div key={member.userId._id} className="flex items-center justify-between py-2">
                                                         <div className="flex justify-between items-center gap-2">
-                                                            <CircleUserRound size={55} />
+                                                            {
+                                                                member.userId.profileImage !== "" ? (
+                                                                    <Avatar className="h-14 w-14 border-2 border-brown-700">
+                                                                        <AvatarImage src={member.userId.profileImage} alt="Imagem de perfil do membro" className="object-cover" />
+                                                                    </Avatar>
+                                                                ) : (
+                                                                    <CircleUserRound size={60} />
+                                                                )
+                                                            }
                                                             <div className="font-semibold">
                                                                 <p className="capitalize">{member.userId.name}</p>
                                                                 <p>💩: {member.individualShits}</p>
@@ -123,13 +131,21 @@ export function Home() {
                                                     <hr className="border-brown-400" />
                                                     <div className="flex items-center gap-5">
                                                         <div>
-                                                            <CircleUserRound size={80} />
+                                                            {
+                                                                memberWithMostPoops.userId.profileImage !== "" ? (
+                                                                    <Avatar className="h-20 w-20 border-2 border-brown-700">
+                                                                        <AvatarImage src={memberWithMostPoops.userId.profileImage} alt="Imagem de perfil do membro" className="object-cover" />
+                                                                    </Avatar>
+                                                                ) : (
+                                                                    <CircleUserRound size={80} />
+                                                                )
+                                                            }
                                                         </div>
                                                         <div className="font-semibold flex flex-col gap-1">
                                                             <p className="text-xl capitalize flex items-center gap-2">
-                                                                <div className="p-2 bg-yellow-300 rounded-full">
+                                                                <span className="p-2 bg-yellow-300 rounded-full border-2 border-yellow-600">
                                                                     <Trophy className="" />
-                                                                </div>
+                                                                </span>
                                                                 {memberWithMostPoops.userId.name}
                                                             </p>
                                                             <p className="text-lg px-2">

@@ -4,6 +4,7 @@ import { AddMemberForm } from "@/components/AddMemberForm"
 import { PartyContext } from "@/components/PartyDetails"
 import { RemoveMemberButton } from "./RemoveMemberButton"
 import { EditMemberForm } from "./EditMemberForm"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 
 export function MemberList() {
     const { party, fetchParty } = useOutletContext<PartyContext>()
@@ -33,7 +34,15 @@ export function MemberList() {
 
                     return (
                         <div key={member.userId._id} className="bg-brown-400 rounded-lg p-3 flex items-center gap-3 relative text-brown-300">
-                            <CircleUserRound size={60} />
+                            {
+                                member.userId.profileImage !== "" ? (
+                                    <Avatar className="h-14 w-14 border-2 border-brown-700">
+                                        <AvatarImage src={member.userId.profileImage} alt="Imagem de perfil do membro" className="object-cover" />
+                                    </Avatar>
+                                ) : (
+                                    <CircleUserRound size={60} />
+                                )
+                            }
 
                             <div className="">
                                 <p className="capitalize font-semibold text-lg flex items-center gap-2">

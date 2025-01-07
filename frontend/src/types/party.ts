@@ -7,6 +7,7 @@ export interface Party {
             _id: string
             name: string
             email: string
+            profileImage: string
         }
         individualShits: number
     }>
@@ -17,6 +18,7 @@ export interface Party {
             _id: string
             name: string
             email: string
+            profileImage: string
         }
         shitTime: Date
     }>
