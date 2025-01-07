@@ -11,9 +11,10 @@ import { useOutletContext } from "react-router-dom"
 import { ProfileContext } from "./Profile"
 import { useToast } from "@/hooks/use-toast"
 import { useCallback, useEffect, useState } from "react"
+import { uploadImageAndReturnUrl } from "@/utils/imageHandling"
 
 
-const EditFormSchema = z.object({
+const ProfileEditFormSchema = z.object({
     email: z.string().email({ message: "Email inválido" }).optional(),
     name: z.string().optional(),
     password: z.string().optional(),
@@ -21,7 +22,7 @@ const EditFormSchema = z.object({
     profileImage: z.string().optional()
 }).transform((data) => {
     return Object.fromEntries(
-        Object.entries(data).filter(([_, value]) => value !== "")
+        Object.entries(data).filter(([key, value]) => key === "profileImage" || value !== "")
     )
 })
 
@@ -33,7 +34,7 @@ export function ProfileEditForm() {
     const { toast } = useToast()
 
     const form = useForm({
-        resolver: zodResolver(EditFormSchema),
+        resolver: zodResolver(ProfileEditFormSchema),
         defaultValues: {
             name: user?.name || "",
             email: user?.email || "",
@@ -52,26 +53,38 @@ export function ProfileEditForm() {
                 email: user.email || "",
                 password: "",
                 newPassword: "",
+                profileImage: user.profileImage || ""
             })
         }
-    }, [user, reset])
+    }, [user])
 
     const onDrop = useCallback(
-        (acceptedFiles: File[]) => {
-            const reader = new FileReader()
-            try {
-                reader.onload = () => {
-                    const imgBase64 = reader.result as string
-                    setPreview(imgBase64)
-                    form.setValue("profileImage", imgBase64)
-                    form.clearErrors("profileImage")
-                }
-                reader.readAsDataURL(acceptedFiles[0])
-            } catch (error) {
+        async (acceptedFiles: File[]) => {
+            if (acceptedFiles.length === 0) {
                 setPreview(null)
+                form.setValue("profileImage", "")
+                return
             }
+
+            const reader = new FileReader()
+
+            reader.onload = async () => {
+                const previewData = reader.result
+                setPreview(previewData)
+
+                try {
+                    const profileImageUrl = await uploadImageAndReturnUrl(acceptedFiles[0])
+                    form.setValue("profileImage", profileImageUrl, { shouldValidate: true, shouldDirty: true })
+                    form.clearErrors("profileImage")
+                } catch (error) {
+                    console.error("Erro ao fazer upload da imagem:", error)
+                    setPreview(null)
+                }
+            }
+
+            reader.readAsDataURL(acceptedFiles[0])
         },
-        [form],
+        [form]
     )
 
     const { getRootProps, getInputProps, fileRejections } = useDropzone({
@@ -82,19 +95,17 @@ export function ProfileEditForm() {
     })
 
 
-    async function onSubmit(values: z.infer<typeof EditFormSchema>) {
+    async function onSubmit(values: z.infer<typeof ProfileEditFormSchema>) {
         try {
-            console.log(values)
-            const response = await axios.patch(`${import.meta.env.VITE_BACKEND_DOMAIN}/users/${user._id}`, values)
+            await axios.patch(`${import.meta.env.VITE_BACKEND_DOMAIN}/users/${user._id}`, values)
 
             toast({
                 variant: "default",
                 title: "Sucesso",
                 description: "Você atualizou o seu perfil!",
             })
-            console.log(response.data)
         } catch (error: any) {
-            console.log(error)
+            console.error(error.message)
         }
     }
 
@@ -143,17 +154,30 @@ export function ProfileEditForm() {
                                                     {...getRootProps()}
                                                     className="mx-auto flex cursor-pointer flex-col items-center justify-center border-2 border-dashed border-brown-700 p-2 min-h-40 min-w-40 rounded-full"
                                                 >
-                                                    {preview && (
-                                                        <img
-                                                            src={preview as string}
-                                                            alt="Uploaded profileImage"
-                                                            className="h-40 w-40 rounded-full"
-                                                        />
-                                                    )}
-                                                    <UserRound
-                                                        className={`size-20 ${preview ? "hidden" : "block"}`}
+                                                    {
+                                                        user.profileImage !== "" && preview === "" ? (
+                                                            <img
+                                                                src={user.profileImage}
+                                                                alt="Imagem de perfil do usuário"
+                                                                className="h-40 w-40 rounded-full"
+                                                            />
+                                                        ) : preview ? (
+                                                            <img
+                                                                src={preview as string}
+                                                                alt="Foto que foi enviada pelo usuário"
+                                                                className="h-40 w-40 rounded-full"
+                                                            />
+                                                        ) : (
+                                                            <UserRound
+                                                                className={`size-20 ${preview ? "hidden" : "block"}`}
+                                                            />
+                                                        )
+                                                    }
+
+                                                    <Input
+                                                        {...getInputProps()}
+                                                        type="file"
                                                     />
-                                                    <Input {...getInputProps()} type="file" />
                                                 </div>
                                             </FormControl>
                                         </FormItem>
