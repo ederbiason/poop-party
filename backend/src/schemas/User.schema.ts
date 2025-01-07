@@ -13,6 +13,12 @@ export class User extends Document {
   @Prop({ required: false })
   name: string
 
+  @Prop({ required: false })
+  partyWins: number
+
+  @Prop({ required: false })
+  profileImage: string
+
   @Prop({ type: [{ type: Types.ObjectId }], ref: 'Party' })
   parties: Types.ObjectId[]
 }
