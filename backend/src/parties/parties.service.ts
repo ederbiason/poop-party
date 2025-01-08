@@ -36,18 +36,14 @@ export class PartiesService {
       })),
     })
 
-    const creator = await this.usersService.findOne(createdBy);
-    if (!creator) throw new NotFoundException("Usuário criador não encontrado!");
-
-    creator.parties.push(newParty._id as Types.ObjectId);
-    await creator.save();
-
     for (const member of members) {
       const user = await this.usersService.findOne(member.userId)
       if (!user) throw new NotFoundException(`Usuário com ID ${member.userId} não encontrado!`)
 
-      user.parties.push(newParty._id as Types.ObjectId)
-      await user.save()
+      if (!user.parties.includes(newParty._id as Types.ObjectId)) {
+        user.parties.push(newParty._id as Types.ObjectId)
+        await user.save()
+      }
     }
 
     return newParty.save().then(party => party.populate('members.userId', 'name email'))

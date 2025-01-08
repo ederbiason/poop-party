@@ -59,7 +59,7 @@ export function Home() {
     }, [user])
 
     return (
-        <div className="p-6 px-8">
+        <div className="p-6 px-8 min-h-screen">
             <div className="flex items-center justify-between">
                 <h1 className="underline text-brown-700 text-3xl font-bold underline-offset-8">
                     Suas parties
