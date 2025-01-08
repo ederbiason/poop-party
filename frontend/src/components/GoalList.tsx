@@ -14,6 +14,7 @@ export function GoalList() {
     const TOKEN = localStorage.getItem('token')
 
     const { party, fetchParty } = useOutletContext<PartyContext>()
+    const { toast } = useToast()
 
     if (!party) {
         return (
@@ -25,8 +26,6 @@ export function GoalList() {
     }
 
     const totalPartyShits = party.members.reduce((total, member) => total + member.individualShits, 0)
-
-    const { toast } = useToast()
 
     async function handleCompleteGoal(goalId: string) {
         try {

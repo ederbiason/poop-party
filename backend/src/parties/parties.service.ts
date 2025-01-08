@@ -80,7 +80,7 @@ export class PartiesService {
     const targetAlreadyExist = party.goals.some(goal => goal.targetShits === targetShits)
     if (targetAlreadyExist) throw new BadRequestException("Essa meta já existe na party.")
 
-    party.goals.push({ targetShits, completed: false })
+    party.goals.push({ _id: new Types.ObjectId(), targetShits, completed: false })
 
     return party.save()
   }

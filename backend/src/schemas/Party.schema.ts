@@ -24,12 +24,11 @@ export class Party extends Document {
   @Prop([{ userId: { type: Types.ObjectId, ref: 'User' }, shitTime: Date }]) 
   history: { userId: Types.ObjectId; shitTime: Date }[]
 
-  @Prop([{ 
+  @Prop([{
     targetShits: { type: Number, required: true },
     completed: { type: Boolean, default: false },
-    _id: { type: Types.ObjectId }
   }]) 
-  goals: { _id?: Types.ObjectId; targetShits: number; completed: boolean }[];
+  goals: { _id: Types.ObjectId; targetShits: number; completed: boolean }[];
 }
 
 export const PartySchema = SchemaFactory.createForClass(Party)
