@@ -71,7 +71,7 @@ export function Home() {
             {
                 parties.length > 0 ? (
                     <div className="py-5 mt-3 flex flex-col gap-6">
-                        {parties.map((party) => {
+                        {parties.sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime()).map((party) => {
                             const memberWithMostPoops = party.members.sort((a, b) => b.individualShits - a.individualShits)[0];
 
                             return (
