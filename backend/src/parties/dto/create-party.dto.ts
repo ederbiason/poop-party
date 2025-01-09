@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, IsDate, IsDateString, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator"
+import { IsArray, IsBoolean, IsDate, IsDateString, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator"
 
 class GoalDto {
     @IsNotEmpty()
@@ -37,4 +37,7 @@ export class CreatePartyDto {
     @ValidateNested({ each: true })
     @Type(() => GoalDto)
     goals: GoalDto[]
+
+    @IsBoolean()
+    partyEnded: boolean = false
 }

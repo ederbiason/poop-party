@@ -140,4 +140,10 @@ export class PartiesController {
   async getPartiesByUser(@Param('userId') userId: string) {
     return await this.partiesService.findPartiesByUser(userId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/status')
+  async updatePartyStatus(@Param('id') partyId: string, @Body('userWinnerId') userWinnerId: string) {
+    return await this.partiesService.updatePartyStatus(partyId, userWinnerId)
+  }
 }

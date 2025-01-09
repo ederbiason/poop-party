@@ -239,7 +239,7 @@ export class PartiesService {
   async findPartiesByUser(userId: string): Promise<Party[]> {
     const parties = await this.partyModel
       .find({ "members.userId": userId })
-      .populate("members.userId", "name email profileImage")
+      .populate("members.userId", "name email profileImage partyWins")
       .populate("createdBy", "name email")
 
     if (!parties || parties.length === 0) {
@@ -247,5 +247,22 @@ export class PartiesService {
     }
 
     return parties
+  }
+
+  async updatePartyStatus(partyId: string, userWinnerId: string): Promise<Party> {
+    const updatedParty = await this.partyModel.findByIdAndUpdate(
+      partyId,
+      { partyEnded: true },
+      { new: true }
+    )
+    if (!updatedParty) throw new NotFoundException('Party não encontrada!')
+
+    const updatedUser = await this.usersService.findOne(userWinnerId)
+    if (!updatedUser) throw new NotFoundException('Usuário não encontrado!')
+
+    updatedUser.partyWins += 1
+    updatedUser.save()
+
+    return updatedParty
   }
 }
