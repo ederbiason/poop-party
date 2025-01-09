@@ -52,6 +52,18 @@ export function Home() {
         }
     }
 
+    async function updatePartyStatusAndWinnerPoints(partyId: string, memberId: string) {
+        try {
+            await axios.patch(`${BACKEND_DOMAIN}/parties/${partyId}/status`, { userWinnerId: memberId }, {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            })
+        } catch (error: any) {
+            console.log(error.message)
+        }
+    }
+
     useEffect(() => {
         if (user) {
             fetchParties()
@@ -72,7 +84,11 @@ export function Home() {
                 parties.length > 0 ? (
                     <div className="py-5 mt-3 flex flex-col gap-6">
                         {parties.sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime()).map((party) => {
-                            const memberWithMostPoops = party.members.sort((a, b) => b.individualShits - a.individualShits)[0];
+                            const memberWithMostPoops = party.members.sort((a, b) => b.individualShits - a.individualShits)[0]
+
+                            if (new Date(party.endDate).getTime() < Date.now() && party.partyEnded === false) {
+                                updatePartyStatusAndWinnerPoints(party._id, memberWithMostPoops.userId._id)
+                            }
 
                             return (
                                 <div key={party._id} className="rounded-3xl bg-brown-500 cursor-pointer" onClick={() => navigate(`/party/${party._id}`)}>

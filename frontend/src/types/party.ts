@@ -8,6 +8,7 @@ export interface Party {
             name: string
             email: string
             profileImage: string
+            partyWins: number
         }
         individualShits: number
     }>
@@ -29,4 +30,5 @@ export interface Party {
     }>
     createdAt: Date
     updatedAt: Date
+    partyEnded: boolean
 }
