@@ -146,4 +146,12 @@ export class PartiesController {
   async updatePartyStatus(@Param('id') partyId: string, @Body('userWinnerId') userWinnerId: string) {
     return await this.partiesService.updatePartyStatus(partyId, userWinnerId)
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/rename')
+  async updatePartyName(@Param('id') partyId: string, @Body('newPartyName') newPartyName: string, @Request() req) {
+    const userId = req.user._id
+
+    return await this.partiesService.updatePartyName(partyId, newPartyName, userId)
+  }
 }

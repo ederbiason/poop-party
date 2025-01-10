@@ -265,4 +265,21 @@ export class PartiesService {
 
     return updatedParty
   }
+
+  async updatePartyName(partyId: string, newPartyName: string, userId: string): Promise<Party> {
+    if(newPartyName.trim() === "") throw new BadRequestException("O nome da party não pode ser vazio!")
+
+    const party = await this.partyModel.findById(partyId)
+    if (!party) throw new NotFoundException("Party não encontrada!")
+
+    this.checkPartyCreator(party, userId)
+
+    const updatedParty = await this.partyModel.findByIdAndUpdate(
+      partyId,
+      { name: newPartyName },
+      { new: true }
+    )
+
+    return updatedParty
+  }
 }
