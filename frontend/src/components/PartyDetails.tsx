@@ -1,6 +1,6 @@
 import { Party } from "@/types/party"
 import axios from "axios"
-import { CircleMinus, CirclePlus, CircleUserRound, Crown, EllipsisVertical, Goal, History, LoaderCircle, LogOut, Trash2, Users } from "lucide-react"
+import { CircleMinus, CirclePlus, CircleUserRound, Crown, History, LoaderCircle } from "lucide-react"
 import { useState } from "react"
 import { useNavigate, useOutletContext, useParams } from "react-router-dom"
 import {
@@ -8,23 +8,6 @@ import {
     CarouselContent,
     CarouselItem
 } from "@/components/ui/carousel"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import moment from 'moment'
 import { User } from "@/types/user"
@@ -34,6 +17,7 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import confetti from "canvas-confetti"
+import { PartyDropDownMenu } from "./PartyDropdownMenu"
 
 export interface PartyContext {
     party: Party
@@ -51,8 +35,6 @@ export function PartyDetails() {
 
     const [selectedTab, setSelectedTab] = useState<string>("history")
     const [shitCounter, setShitCounter] = useState<number>(1)
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-    const [isLeaveGroupDialogOpen, setIsLeaveGroupDialogOpen] = useState(false)
 
     const { id: partyId } = useParams()
     const { party, fetchParty, user } = useOutletContext<PartyContext>()
@@ -81,48 +63,6 @@ export function PartyDetails() {
         }
     }
 
-    async function handleDeleteGroup() {
-        try {
-            await axios.delete(`${BACKEND_DOMAIN}/parties/${partyId}`, {
-                headers: {
-                    Authorization: `Bearer ${TOKEN}`,
-                },
-            })
-
-            setIsDeleteDialogOpen(false)
-            navigate("/")
-            fetchParty()
-            toast({
-                variant: "default",
-                title: "Sucesso",
-                description: "Você apagou o grupo!",
-            })
-        } catch (error: any) {
-            console.error(error.message)
-        }
-    }
-
-    async function handleLeaveGroup() {
-        try {
-            await axios.patch(`${BACKEND_DOMAIN}/parties/${partyId}/leave`, {}, {
-                headers: {
-                    Authorization: `Bearer ${TOKEN}`,
-                },
-            })
-
-            setIsLeaveGroupDialogOpen(false)
-            navigate("/")
-            fetchParty()
-            toast({
-                variant: "default",
-                title: "Sucesso",
-                description: "Você saiu do grupo!",
-            })
-        } catch (error: any) {
-            console.error(error)
-        }
-    }
-
     const getDayPeriod = (time: Date) => {
         const hour = moment(time).hour()
         if (hour < 12) return "da manhã"
@@ -146,150 +86,12 @@ export function PartyDetails() {
                                         {party.name}
                                     </h1>
 
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger>
-                                            <EllipsisVertical className="text-brown-700" />
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="bg-brown-400 font-semibold">
-                                            <DropdownMenuLabel>Grupo</DropdownMenuLabel>
-                                            <DropdownMenuSeparator className="" />
-                                            {
-                                                party.createdBy === user!._id && new Date(party.endDate).getTime() >= Date.now() ? (
-                                                    <>
-                                                        <DropdownMenuItem onClick={() => navigate('members')}>
-                                                            <Users />
-                                                            Membros
-                                                        </DropdownMenuItem>
-
-                                                        <DropdownMenuItem onClick={() => navigate('goals')}>
-                                                            <Goal />
-                                                            Metas
-                                                        </DropdownMenuItem>
-
-                                                        <DropdownMenuItem>
-                                                            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                                                                <DialogTrigger
-                                                                    className="flex items-center gap-2"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation()
-                                                                        setIsDeleteDialogOpen(true)
-                                                                    }}
-                                                                >
-                                                                    <Trash2 />
-                                                                    Deletar grupo
-                                                                </DialogTrigger>
-                                                                <DialogContent className="bg-brown-100 rounded-lg">
-                                                                    <DialogHeader className="text-start">
-                                                                        <DialogTitle className="text-brown-700 text-2xl">Tem certeza que deseja deletar o grupo?</DialogTitle>
-                                                                        <DialogDescription className="text-brown-500">
-                                                                            Essa ação não pode ser desfeita. Isso vai permanentemente deletar o grupo.
-                                                                        </DialogDescription>
-                                                                    </DialogHeader>
-
-                                                                    <DialogFooter className="flex flex-row items-center justify-end gap-5">
-                                                                        <Button
-                                                                            type="button"
-                                                                            className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
-                                                                            onClick={() => setIsDeleteDialogOpen(false)}
-                                                                        >
-                                                                            Cancelar
-                                                                        </Button>
-                                                                        <Button
-                                                                            type="button"
-                                                                            className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
-                                                                            onClick={() => handleDeleteGroup()}
-                                                                        >
-                                                                            Continuar
-                                                                        </Button>
-                                                                    </DialogFooter>
-                                                                </DialogContent>
-                                                            </Dialog>
-                                                        </DropdownMenuItem>
-                                                    </>
-                                                ) : party.createdBy === user!._id && new Date(party.endDate).getTime() < Date.now() ? (
-                                                    <DropdownMenuItem>
-                                                        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                                                            <DialogTrigger
-                                                                className="flex items-center gap-2"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation()
-                                                                    setIsDeleteDialogOpen(true)
-                                                                }}
-                                                            >
-                                                                <Trash2 />
-                                                                Deletar grupo
-                                                            </DialogTrigger>
-                                                            <DialogContent className="bg-brown-100 rounded-lg">
-                                                                <DialogHeader className="text-start">
-                                                                    <DialogTitle className="text-brown-700 text-2xl">Tem certeza que deseja deletar o grupo?</DialogTitle>
-                                                                    <DialogDescription className="text-brown-500">
-                                                                        Essa ação não pode ser desfeita. Isso vai permanentemente deletar o grupo.
-                                                                    </DialogDescription>
-                                                                </DialogHeader>
-
-                                                                <DialogFooter className="flex flex-row items-center justify-end gap-5">
-                                                                    <Button
-                                                                        type="button"
-                                                                        className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
-                                                                        onClick={() => setIsDeleteDialogOpen(false)}
-                                                                    >
-                                                                        Cancelar
-                                                                    </Button>
-                                                                    <Button
-                                                                        type="button"
-                                                                        className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
-                                                                        onClick={() => handleDeleteGroup()}
-                                                                    >
-                                                                        Continuar
-                                                                    </Button>
-                                                                </DialogFooter>
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                    </DropdownMenuItem>
-                                                ) : (
-                                                    <DropdownMenuItem>
-                                                        <Dialog open={isLeaveGroupDialogOpen} onOpenChange={setIsLeaveGroupDialogOpen}>
-                                                            <DialogTrigger
-                                                                className="flex items-center gap-1"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation()
-                                                                    setIsLeaveGroupDialogOpen(true)
-                                                                }}
-                                                            >
-                                                                <LogOut />
-                                                                Sair do grupo
-                                                            </DialogTrigger>
-                                                            <DialogContent className="bg-brown-100 rounded-lg">
-                                                                <DialogHeader className="text-start">
-                                                                    <DialogTitle className="text-brown-700 text-2xl">Tem certeza que deseja sair do grupo?</DialogTitle>
-                                                                    <DialogDescription className="text-brown-500">
-                                                                        Essa ação não pode ser desfeita. Você será removido do grupo.
-                                                                    </DialogDescription>
-                                                                </DialogHeader>
-
-                                                                <DialogFooter className="flex flex-row items-center justify-end gap-5">
-                                                                    <Button
-                                                                        type="button"
-                                                                        className="text-brown-300 bg-red-800 hover:bg-red-500 font-semibold"
-                                                                        onClick={() => setIsLeaveGroupDialogOpen(false)}
-                                                                    >
-                                                                        Cancelar
-                                                                    </Button>
-                                                                    <Button
-                                                                        type="button"
-                                                                        className="text-brown-300 bg-brown-800 hover:bg-brown-500 font-semibold"
-                                                                        onClick={() => handleLeaveGroup()}
-                                                                    >
-                                                                        Continuar
-                                                                    </Button>
-                                                                </DialogFooter>
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                    </DropdownMenuItem>
-                                                )
-                                            }
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <PartyDropDownMenu 
+                                        user={user}
+                                        partyId={partyId!}
+                                        fetchParty={fetchParty}
+                                        party={party}
+                                    />
                                 </div>
                                 <div className="flex flex-col items-center justify-center gap-5 pt-2">
                                     <Carousel className="w-full overflow-hidden py-1 px-2">
