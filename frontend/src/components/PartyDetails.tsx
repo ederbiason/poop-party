@@ -88,7 +88,6 @@ export function PartyDetails() {
 
                                     <PartyDropDownMenu 
                                         user={user}
-                                        partyId={partyId!}
                                         fetchParty={fetchParty}
                                         party={party}
                                     />
