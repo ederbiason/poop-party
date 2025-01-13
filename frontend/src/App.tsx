@@ -9,8 +9,9 @@ import { MemberList } from '@/components/MemberList'
 import { PartyWrapper } from '@/components/PartyWrapper'
 import { GoalList } from '@/components/GoalList'
 import { Profile } from '@/components/Profile'
-import { ProfileWrapper } from './components/ProfileWrapper'
-import { ProfileEditForm } from './components/ProfileEditForm'
+import { ProfileWrapper } from '@/components/ProfileWrapper'
+import { ProfileEditForm } from '@/components/ProfileEditForm'
+import { NoMatch } from '@/components/NoMatch'
 
 export function App() {
   return (
@@ -32,6 +33,8 @@ export function App() {
               <Route index element={<Profile />} />
               <Route path="edit" element={<ProfileEditForm />} />
             </Route>
+
+            <Route path='*' element={<NoMatch />} />
           </Route>
         </Route>
       </Routes>
