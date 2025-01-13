@@ -18,6 +18,7 @@ export function ProfileWrapper() {
     const [user, setUser] = useState<User>()
     const [loggedUser, setLoggedUser] = useState<LoggedUserProps>()
     const [maxIndividualShits, setMaxIndividualShits] = useState<number>(0)
+    const [userEndedParties, setUserEndedParties] = useState<Party[]>([])
 
     useEffect(() => {
         async function fetchLoggedUser() {
@@ -64,6 +65,9 @@ export function ProfileWrapper() {
 
                 const parties: Party[] = response.data
 
+                const endedParties = parties.filter((party) => party.partyEnded === true)
+                setUserEndedParties(endedParties)
+
                 const maxShits = parties.reduce((max, party) => {
                     const userShits = party.members.find(member => member.userId._id === userId)?.individualShits || 0
                     return Math.max(max, userShits)
@@ -80,7 +84,7 @@ export function ProfileWrapper() {
 
     return (
         <div className="min-h-screen">
-            <Outlet context={{user, maxIndividualShits, loggedUser}} />
+            <Outlet context={{user, maxIndividualShits, loggedUser, userEndedParties}} />
         </div>
     )
 }

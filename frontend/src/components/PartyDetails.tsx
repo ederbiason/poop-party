@@ -76,7 +76,7 @@ export function PartyDetails() {
                 (() => {
                     const totalPartyShits = party.members.reduce((total, member) => total + member.individualShits, 0)
                     const totalGoalsCompleted = party.goals.reduce((total, goal) => { return goal.completed ? total + 1 : total }, 0)
-                    const totalDaysToFinishParty = Math.round((new Date(party.endDate).getTime() - new Date(party.createdAt).getTime()) / (1000 * 3600 * 24))
+                    const totalDaysToFinishParty = Math.round((new Date(party.endDate).getTime() - Date.now()) / (1000 * 3600 * 24))
 
                     return (
                         <div className="flex flex-col w-full min-h-screen">
