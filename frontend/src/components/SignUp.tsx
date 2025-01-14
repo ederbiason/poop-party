@@ -59,6 +59,7 @@ export function SignUp({ onSignUpSuccess }: SignUpProps) {
                                             placeholder="Digite seu email"
                                             startIcon={Mail}
                                             className="border-brown-700 placeholder:text-brown-700 placeholder:text-base py-6 bg-white bg-opacity-50"
+                                            onChange={(e) => field.onChange(e.target.value.toLowerCase())}
                                         />
                                     </FormControl>
                                 </FormItem>
