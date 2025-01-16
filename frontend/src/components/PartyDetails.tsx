@@ -99,7 +99,7 @@ export function PartyDetails() {
                                                 <CarouselItem className="basis-1/3 pl-0 flex flex-col gap-1 items-center justify-between capitalize text-center relative" key={member.userId._id}>
                                                     {
                                                         member.userId.profileImage !== "" ? (
-                                                            <Avatar className="h-24 w-24 border-2 border-brown-700" onClick={() => navigate(`/profile/${member.userId._id}`)}>
+                                                            <Avatar className="h-24 w-24 border-2 border-brown-700 cursor-pointer" onClick={() => navigate(`/profile/${member.userId._id}`)}>
                                                                 <AvatarImage src={member.userId.profileImage} alt="Imagem de perfil do membro" className="object-cover" />
                                                             </Avatar>
                                                         ) : (
