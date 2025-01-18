@@ -2,9 +2,9 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { CreatePartyDto } from './dto/create-party.dto';
 import { UpdatePartyDto } from './dto/update-party.dto';
 import { Model, Types } from 'mongoose';
-import { Party } from 'src/schemas/Party.schema';
+import { Party } from '@src/schemas/Party.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '@src/users/users.service';
 
 @Injectable()
 export class PartiesService {
