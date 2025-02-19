@@ -14,7 +14,7 @@ async function bootstrap() {
   const frontendOrigin = configService.get<string>('FRONTEND_DOMAIN')
 
   app.enableCors({
-    origin: [frontendOrigin, 'https://poop-party.vercel.app'],
+    origin: frontendOrigin,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   })
