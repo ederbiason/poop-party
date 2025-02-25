@@ -8,16 +8,25 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import { logout } from "@/utils/auth";
 import { useEffect, useState } from "react";
 import { User } from "@/types/user";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
     const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
     const TOKEN = localStorage.getItem('token')
 
     const [user, setUser] = useState<User>()
+    const [unauthorizedModal, setUnauthorizedModal] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -31,6 +40,7 @@ export function Header() {
                 setUser(response.data)
             } catch (error: any) {
                 console.error(error.message)
+                setUnauthorizedModal(true)
             }
         }
 
@@ -68,6 +78,32 @@ export function Header() {
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
+
+            <Dialog open={unauthorizedModal} onOpenChange={setUnauthorizedModal}>
+                <DialogContent className="bg-brown-100 rounded-lg">
+                    <DialogHeader className="text-start">
+                        <DialogTitle className="text-brown-700 text-2xl">🚫 Acesso negado 🚫</DialogTitle>
+                        <DialogDescription className="text-brown-500">
+                            Seu token de autenticação está inválido ou expierou!
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <p className="text-brown-700 font-semibold">
+                        Faça login novamente para ter acesso ao site.
+                    </p>
+
+                    <Button
+                        type="submit"
+                        onClick={() => {
+                            localStorage.removeItem('token')
+                            window.location.reload()
+                        }}
+                        className="bg-brown-800 hover:bg-brown-500 mt-2"
+                    >
+                        Fazer Login
+                    </Button>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

@@ -12,7 +12,7 @@ export function Authentication() {
     }
 
     return (
-        <div className="w-full h-screen bg-brown-500 flex flex-col items-center justify-center relative">
+        <div className="w-full h-full bg-brown-500 flex flex-col items-center justify-center relative">
             <div className="absolute -top-28 bg-brown-800 blur-2xl rounded-full w-full h-[400px]" />
             <img
                 src={PoopLogo}

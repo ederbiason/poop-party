@@ -43,7 +43,7 @@ export function Login() {
     }
 
     return (
-        <div className="bg-brown-300 w-full flex flex-col gap-4 animate-fade-left">
+        <div className="bg-brown-300 w-full h-full flex flex-col gap-4 animate-fade-left">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="flex flex-col gap-3">
