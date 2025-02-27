@@ -8,10 +8,12 @@ import { useNavigate } from "react-router-dom"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import moment from "moment"
 import 'moment/dist/locale/pt-br'
+import { SkeletonHomeCard } from "./SkeletonHomeCard"
 moment.locale('pt-br')
 
 export function Home() {
     const [user, setUser] = useState<User>()
+    const [isLoadingParties, setIsLoadingParties] = useState<boolean>(false)
     const [parties, setParties] = useState<Party[]>([])
 
     const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN
@@ -38,6 +40,7 @@ export function Home() {
 
     async function fetchParties() {
         try {
+            setIsLoadingParties(true)
             const response = await axios.get(`${BACKEND_DOMAIN}/parties/user/${user!._id}`, {
                 headers: {
                     Authorization: `Bearer ${TOKEN}`,
@@ -49,6 +52,8 @@ export function Home() {
             setParties(response.data)
         } catch (error: any) {
             console.error(error.message)
+        } finally {
+            setIsLoadingParties(false)
         }
     }
 
@@ -81,7 +86,16 @@ export function Home() {
             </div>
 
             {
-                parties.length > 0 ? (
+                isLoadingParties ? (
+                    <div className="py-5 mt-3 flex gap-2 font-semibold justify-center text-brown-700 min-h-screen">
+                        <SkeletonHomeCard />
+                    </div>
+                ) : parties.length === 0 ? (
+                    <div className="py-5 mt-3 flex gap-2 font-semibold justify-center text-brown-700 min-h-screen">
+                        <p>Você não faz parte de nenhuma party!</p>
+                        <Frown />
+                    </div>
+                ) : (
                     <div className="py-5 mt-3 flex flex-col gap-6">
                         {parties.sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime()).map((party) => {
                             const memberWithMostPoops = party.members.sort((a, b) => b.individualShits - a.individualShits)[0]
@@ -181,11 +195,6 @@ export function Home() {
                                 </div>
                             )
                         })}
-                    </div>
-                ) : (
-                    <div className="py-5 mt-3 flex gap-2 font-semibold justify-center text-brown-700 min-h-screen">
-                        <p>Você não faz parte de nenhuma party!</p>
-                        <Frown />
                     </div>
                 )
             }
